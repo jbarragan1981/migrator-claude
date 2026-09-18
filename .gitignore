@@ -1,0 +1,22 @@
+# Datos reales del usuario — NUNCA al repo
+exports/
+output/
+*.zip
+member-manifest-*.json
+.env
+.env.*
+# Python
+.venv/
+__pycache__/
+*.pyc
+.mypy_cache/
+.ruff_cache/
+.pytest_cache/
+htmlcov/
+dist/
+# Node
+node_modules/
+apps/web/.angular/
+apps/web/dist/
+# Claude Code (local, no compartido)
+.claude/settings.local.json

@@ -1,0 +1,41 @@
+{
+  "$schema": "https://json.schemastore.org/claude-code-settings.json",
+  "permissions": {
+    "allow": [
+      "Read", "Edit", "Write", "Glob", "Grep",
+      "Bash(uv *)", "Bash(uv run *)", "Bash(just *)", "Bash(pnpm *)", "Bash(npx ng *)",
+      "Bash(ruff *)", "Bash(mypy *)", "Bash(pytest *)",
+      "Bash(git status*)", "Bash(git diff*)", "Bash(git log*)", "Bash(git add *)", "Bash(git commit *)", "Bash(git checkout -b *)",
+      "Bash(ls *)", "Bash(dir *)", "Bash(tree *)", "Bash(find *)", "Bash(head *)", "Bash(wc *)", "Bash(cat *)",
+      "Bash(docker compose *)"
+    ],
+    "deny": [
+      "Bash(rm -rf *)", "Bash(git push --force*)", "Bash(git push -f*)", "Bash(git reset --hard*)",
+      "Bash(pip install *)", "Bash(curl *claude.ai*)", "Bash(wget *claude.ai*)",
+      "Read(./exports/**)", "Read(./output/**)", "Read(**/.env)", "Read(**/.env.*)",
+      "Write(./exports/**)", "Write(./output/**)", "Edit(./exports/**)", "Edit(./output/**)",
+      "Write(./uv.lock)", "Edit(./uv.lock)", "Write(./pnpm-lock.yaml)", "Edit(./pnpm-lock.yaml)"
+    ]
+  },
+  "hooks": {
+    "SessionStart": [
+      { "hooks": [ { "type": "command", "command": "python \"$CLAUDE_PROJECT_DIR/.claude/hooks/session_start.py\"", "timeout": 20 } ] }
+    ],
+    "UserPromptSubmit": [
+      { "hooks": [ { "type": "command", "command": "python \"$CLAUDE_PROJECT_DIR/.claude/hooks/prompt_context.py\"", "timeout": 10 } ] }
+    ],
+    "PreToolUse": [
+      { "matcher": "Bash", "hooks": [ { "type": "command", "command": "python \"$CLAUDE_PROJECT_DIR/.claude/hooks/guard_bash.py\"", "timeout": 10 } ] },
+      { "matcher": "Edit|Write|MultiEdit", "hooks": [ { "type": "command", "command": "python \"$CLAUDE_PROJECT_DIR/.claude/hooks/guard_files.py\"", "timeout": 10 } ] }
+    ],
+    "PostToolUse": [
+      { "matcher": "Edit|Write|MultiEdit", "hooks": [ { "type": "command", "command": "python \"$CLAUDE_PROJECT_DIR/.claude/hooks/post_edit.py\"", "timeout": 60 } ] }
+    ],
+    "Stop": [
+      { "hooks": [ { "type": "command", "command": "python \"$CLAUDE_PROJECT_DIR/.claude/hooks/stop_check.py\"", "timeout": 120 } ] }
+    ],
+    "SubagentStop": [
+      { "hooks": [ { "type": "command", "command": "python \"$CLAUDE_PROJECT_DIR/.claude/hooks/stop_check.py\" --subagent", "timeout": 120 } ] }
+    ]
+  }
+}
