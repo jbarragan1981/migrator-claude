@@ -9,6 +9,10 @@ dependencies = [
   "ijson>=3.3",
   "jinja2>=3.1",
   "python-frontmatter>=1.1",
+  # El frontmatter se emite con el dumper de PyYAML (no a mano) para que sea YAML
+  # válido con cualquier contenido del usuario. Ya venía como dependencia transitiva
+  # de python-frontmatter; aquí es explícita porque `rendering/filters.py` la importa.
+  "pyyaml>=6.0",
 ]
 
 [dependency-groups]
@@ -18,6 +22,7 @@ dev = [
   "syrupy>=4.7",
   "mypy>=1.11",
   "ruff>=0.6",
+  "types-pyyaml>=6.0",
 ]
 
 [build-system]

@@ -1,0 +1,123 @@
+# serializer version: 1
+# name: test_snapshot_of_every_memory
+  dict({
+    '/_conversations_memory.md': '''
+      ---
+      id: /_conversations_memory.md
+      type: memory
+      title: Memoria de conversaciones
+      created_at: null
+      updated_at: null
+      source_file: memories-000/memories/11111111-2222-4333-8444-555555555555.json
+      tags: [memory, conversations-memory]
+      extra:
+        origin: conversations_memory
+        synthetic_path: true
+      ---
+      
+      # Lo que recuerdo de las conversaciones
+      
+      - Prefiere respuestas en espanol y directas.
+      - Trabaja en una herramienta para exportar datos a Markdown.
+      - Odia los resumenes vacios al final de cada respuesta.
+  
+    ''',
+    '/_project_memories/ffffffff-0000-4000-8000-000000000001.md': '''
+      ---
+      id: /_project_memories/ffffffff-0000-4000-8000-000000000001.md
+      type: memory
+      title: Memoria del proyecto ffffffff-0000-4000-8000-000000000001
+      created_at: null
+      updated_at: null
+      source_file: memories-000/memories/11111111-2222-4333-8444-555555555555.json
+      project_id: ffffffff-0000-4000-8000-000000000001
+      tags: [memory, project-memories, project]
+      extra:
+        origin: project_memories
+        synthetic_path: true
+      ---
+      
+      Memoria del primer proyecto: el usuario quiere conservar los adjuntos.
+  
+    ''',
+    '/_project_memories/ffffffff-0000-4000-8000-000000000002.md': '''
+      ---
+      id: /_project_memories/ffffffff-0000-4000-8000-000000000002.md
+      type: memory
+      title: Memoria del proyecto ffffffff-0000-4000-8000-000000000002
+      created_at: null
+      updated_at: null
+      source_file: memories-000/memories/11111111-2222-4333-8444-555555555555.json
+      project_id: ffffffff-0000-4000-8000-000000000002
+      tags: [memory, project-memories, project]
+      extra:
+        origin: project_memories
+        synthetic_path: true
+      ---
+      
+      Memoria del segundo proyecto: migrar la documentacion interna a Markdown.
+  
+    ''',
+    '/areas/Analisis Ñandú.md': '''
+      ---
+      id: /areas/Analisis Ñandú.md
+      type: memory
+      title: Analisis Ñandú
+      created_at: null
+      updated_at: null
+      source_file: memories-000/memories/11111111-2222-4333-8444-555555555555.json
+      tags: [memory, memory-files, areas]
+      extra:
+        origin: memory_files
+        updated_at_raw: sin fecha
+      ---
+      
+      Proyecto de analisis de datos de aves corredoras.
+      
+      ---
+      
+      Nota al pie con una linea de guiones arriba.
+  
+    ''',
+    '/people/Ana Maria.md': '''
+      ---
+      id: /people/Ana Maria.md
+      type: memory
+      title: Ana Maria
+      created_at: null
+      updated_at: '2026-02-01T16:05:42Z'
+      source_file: memories-000/memories/11111111-2222-4333-8444-555555555555.json
+      tags: [memory, memory-files, people]
+      extra:
+        origin: memory_files
+      ---
+      
+      Ana Maria es la disenadora del equipo. Revisa siempre los textos en espanol antes de publicarlos.
+  
+    ''',
+    '/profile.md': '''
+      ---
+      id: /profile.md
+      type: memory
+      title: profile
+      created_at: null
+      updated_at: '2026-01-15T09:30:00Z'
+      source_file: memories-000/memories/11111111-2222-4333-8444-555555555555.json
+      tags: [memory, memory-files]
+      extra:
+        confidence: alta
+        origin: memory_files
+      ---
+      
+      # Perfil
+      
+      Se llama Valentina, vive en Montevideo y programa en Python.
+      
+      ## Preferencias
+      
+      - Tono directo, sin adulacion.
+      - Ejemplos antes que teoria.
+  
+    ''',
+  })
+# ---
