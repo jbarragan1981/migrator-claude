@@ -1,0 +1,64 @@
+# serializer version: 1
+# name: test_snapshot_of_the_index
+  '''
+  # Índice del export
+  
+  ## Conversaciones (4)
+  
+  | Fecha | Conversación | Proyecto | Mensajes |
+  | --- | --- | --- | --- |
+  | 2026-03-03 | [Primera](conversations/2026/03/a.md) | — | — |
+  | 2026-03-02 | [Segunda](conversations/2026/03/b.md) | — | — |
+  | 2026-03-01 | [Tercera](conversations/2026/03/c.md) | — | — |
+  | — | [Sin fecha](conversations/sin-fecha/z.md) | — | — |
+  
+  ## Memorias (1)
+  
+  | Actualizada | Memoria | Proyecto |
+  | --- | --- | --- |
+  | — | [Memoria de conversaciones](memories/conversations-memory.md) | — |
+  
+  '''
+# ---
+# name: test_snapshot_of_the_readme
+  '''
+  # Export de Claude.ai en Markdown
+  
+  Esta carpeta es la conversión a Markdown de una exportación de datos de Claude.ai.
+  Se generó con `claude-export-md` en la máquina del usuario: nada se descargó de
+  Internet y nada salió de ella.
+  
+  ## De dónde salió
+  
+  | Dato | Valor |
+  | --- | --- |
+  | Export | `mi-export` |
+  | Formato | `batched-manifest` |
+  | Fecha del export | 2026-09-18T16:59:47Z |
+  
+  ## Qué se convirtió
+  
+  | Categoría | Ítems |
+  | --- | --- |
+  | conversations | 4 |
+  | memories | 6 |
+  
+  ## Cómo está organizado
+  
+  - [`_index.md`](_index.md) — índice de todo, con enlaces relativos.
+  - `memories/` — las memorias de la cuenta, respetando su ruta original.
+  - `conversations/YYYY/MM/` — una conversación por archivo; los bloques de código
+    largos que traía el mensaje se extrajeron a su carpeta `artifacts/`.
+  - `_report/` — `summary.json` (qué se convirtió), `errors.jsonl` (una línea por ítem
+    que no se pudo parsear) e `inventory.json` (qué traía el export).
+  
+  ## Lo que todavía no está
+  
+  Esta versión convierte memorias y conversaciones. Los proyectos (`projects/`), los
+  artefactos (`frames/`) y el perfil de la cuenta (`account/`) se añadirán más adelante:
+  mientras tanto, esos datos siguen intactos en el export original.
+  
+  Categorías que este export no traía: frames, projects.
+  
+  '''
+# ---

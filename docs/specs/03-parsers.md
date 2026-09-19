@@ -17,7 +17,24 @@ Registrado en usecases/convert.py por nombre de categoria y version de formato.
 - CA-C4 Campos desconocidos preservados en extra.
 - CA-C5 Orden de salida deterministico (por created_at, luego id).
 
-## conversations [OK]
+## conversations [OK] [IMPLEMENTADO]
+Implementado en adapters/parsers/conversations.py con la firma parse(source, report) -> Iterator[Conversation] (misma convencion que memories: sin el argumento category). Render en rendering/conversations.py + rendering/artifacts.py + templates/conversation.md.j2; escritura a traves del puerto MarkdownSink desde usecases/convert.py (ADR-0006), con FilesystemSink como unica implementacion hoy. Cobertura por tests en packages/core/tests/test_parse_conversations.py y test_render_conversations.py (100% de linea en los tres modulos nuevos):
+- CA-1 test_ca1_mixed_block_types_keep_their_order, test_ca1_an_unknown_block_type_is_kept_as_is (el tipado y el orden los resuelve ContentBlock.from_raw del dominio, el parser no reimplementa nada)
+- CA-2 test_ca2_project_uuid_links_the_conversation, test_ca2_null_project_uuid_leaves_no_link, test_ca2_blank_project_uuid_is_not_a_link. Ya NO queda sin verificar end-to-end: el fixture sintetico fixtures/synthetic/conversations-batched/ trae una conversacion con project_uuid no-null (el fixture anonimizado real sigue teniendo los 3 items con project_uuid=null). Falta el otro extremo del enlace, que es del parser de projects (M2).
+- CA-3 test_ca3_tool_use_input_is_preserved_whole, test_ca3_tool_result_keeps_its_nested_content_and_meta, test_thinking_keeps_its_summaries. El parser no toca esos objetos: van enteros a ContentBlock.payload.
+- CA-4 test_ca4_empty_name_and_summary_are_not_treated_as_absent, test_a_null_summary_stays_none. Solo null es ausencia; "" se conserva y se emite en el frontmatter.
+- CA-5 Implementado como fallback opcional, tal y como permite este CA: se extraen las CERCAS DE CODIGO largas (>40 lineas) del texto del mensaje a artifacts/NN-<nombre>.<ext> con enlace relativo (spec 04 CA-5, umbral razonado alli). No se asume que ese sea el mecanismo principal de artefactos: frames sigue siendo la categoria dedicada y se resuelve en M2.
+- CA-C1 test_cac1_parts_are_concatenated_without_duplicating (dedupe por Conversation.id)
+- CA-C2 test_cac2_* (item que no es objeto, item sin uuid, chat_messages con forma rara, JSON truncado, raiz que no es array, archivo vacio, archivo que desaparece, mensaje que no es objeto, bloque que no es objeto)
+- CA-C3 test_cac3_the_first_conversation_arrives_without_reading_the_whole_file: con un fixture de >3 MB, pedir la PRIMERA conversacion lee menos de 500 KB (json.load habria leido los 3 MB antes de devolver nada). No hay techo de tamano como en memories: aqui el streaming es la regla.
+- CA-C4 test_cac4_unknown_fields_are_preserved (account acaba en extra). chat_messages y project_uuid NO se duplican en extra: ya estan en messages y project_id, y copiarlos seria meter el export entero en memoria.
+- CA-C5 test_cac5_parse_sorted_orders_by_date_then_id, test_cac5_conversations_without_date_go_last_and_keep_their_relative_order, test_cac5_two_runs_produce_the_same_order. El orden canonico lo da parse_sorted(), que materializa la lista (~291 entidades); parse() emite en streaming en el orden del archivo, que ya es deterministico. Se separan a proposito: la ruta de salida de cada conversacion depende solo de si misma, asi que convert puede escribir en streaming y usar la lista ordenada solo donde el orden importa (el _index.md).
+
+Decisiones adicionales del parser, que el export no trae resueltas:
+- Mensaje sin uuid: NO se descarta (perder el texto de un turno por un identificador ausente seria peor). Recibe el id sintetico y deterministico <uuid de la conversacion>#<posicion>, se marca con extra["synthetic_id"]=True y se avisa en report.warnings. El identificador del ITEM (la conversacion) si es obligatorio: sin uuid, ParseError y no se emite.
+- chat_messages ilegible: la conversacion se conserva igual (titulo, fechas y enlace a proyecto siguen siendo utiles) y el problema va a report.errors con item_id = uuid de la conversacion.
+- Igual que memories, el parser anota en extra["source_file"] el archivo del export del que salio cada conversacion, porque el frontmatter obligatorio del spec 04 lo pide y el dominio no conoce el sistema de archivos.
+
 - Origen confirmado: conversations-000/conversations.json, archivo UNICO (no hay parte mayor a 0 en este export), root_type=array, unos 291 items, unos 98 MB.
 - Cada item: uuid, name, summary, created_at, updated_at, project_uuid (nullable), account.uuid, chat_messages[].
 - Cada mensaje: uuid, sender ("human" o "assistant"), parent_message_uuid, text, created_at, updated_at, content[]. NO se confirmaron attachments[] ni files[] en la muestra (spec 02 los preveia como hipotesis).
@@ -28,7 +45,20 @@ Registrado en usecases/convert.py por nombre de categoria y version de formato.
 - CA-4 name y summary pueden ser cadena vacia. No se debe tratar cadena vacia como campo ausente ni descartarlo.
 - CA-5 Artefactos embebidos en el texto no se observaron en la muestra de 3 conversaciones. El parser puede implementar esa extraccion como fallback opcional pero no puede asumir que es el mecanismo principal de artefactos, dado que existe una categoria dedicada frames que parece cumplir ese rol.
 
-## memories [OK] - corrige hipotesis de CLAUDE.md y spec 01
+## memories [OK] [IMPLEMENTADO] - corrige hipotesis de CLAUDE.md y spec 01
+Implementado en adapters/parsers/memories.py con la firma parse(source, report) -> Iterator[Memory] (sin el argumento category: el modulo YA es la categoria; el registro por nombre se hara en usecases/convert.py). Cobertura por tests en packages/core/tests/test_parse_memories.py:
+- CA-1 test_ca1_reads_the_single_json_of_the_account
+- CA-2 test_ca2_memory_files_keep_their_real_path_and_content, test_memory_file_dates_are_normalised_to_utc, test_unreadable_date_does_not_invalidate_the_memory
+- CA-3 test_ca3_conversations_memory_gets_the_synthetic_path (+ los casos de cadena vacia y tipo inesperado)
+- CA-4 test_ca4_project_memories_link_to_their_project, test_project_memories_are_emitted_sorted_by_uuid
+- CA-5 test_ca5_empty_collections_are_tolerated, test_ca5_missing_collections_are_tolerated
+- CA-C1 test_cac1_parts_are_concatenated_without_duplicating (dedupe por Memory.path, que es el identificador segun ADR-0005)
+- CA-C2 test_cac2_broken_json_is_reported_and_the_run_continues + los casos de raiz que no es objeto, entrada sin path y entrada que no es objeto
+- CA-C3 no aplica el streaming aqui: el archivo es un OBJETO de ~110 KB (no un array de items) y hay uno por cuenta, asi que se lee entero con json.load. El parser comprueba el tamano antes (MAX_JSON_BYTES = 10 MB) y registra un ParseError en vez de cargarlo si algun export lo superara (test_oversized_file_is_reported_instead_of_loaded). La regla de ijson sigue siendo obligatoria para conversations.
+- CA-C4 test_cac4_unknown_fields_are_preserved
+- CA-C5 test_cac5_two_runs_produce_the_same_order, test_memory_files_come_before_the_synthetic_ones (orden: memory_files en el orden del array, luego conversations_memory, luego project_memories ordenadas por uuid)
+Ademas: el parser anota en extra["source_file"] el archivo del export del que salio cada memoria, porque el frontmatter obligatorio del spec 04 lo pide y el dominio no conoce el sistema de archivos.
+
 - Origen confirmado: un unico archivo JSON por cuenta (memories-000/memories/<account_uuid>.json), root_type=object. NO es una carpeta de archivos .md como asumia CLAUDE.md secciones 2, 5 y 6 - esa hipotesis queda descartada para el formato batched-manifest 2026.
 - Forma: account_uuid, conversations_memory (string), memory_files (array de content/path/updated_at), project_memories (objeto con clave uuid de proyecto y valor string).
 - CA-1 El parser lee un solo archivo por cuenta, no recorre una carpeta buscando .md.

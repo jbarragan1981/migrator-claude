@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import typer
 
+from claude_export_md_cli.commands.convert import convert
 from claude_export_md_cli.commands.inventory import inventory
 
 app = typer.Typer(
@@ -21,6 +22,7 @@ def cli() -> None:
 
 
 app.command("inventory")(inventory)
+app.command("convert")(convert)
 
 
 if __name__ == "__main__":

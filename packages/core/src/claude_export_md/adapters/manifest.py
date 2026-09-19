@@ -14,7 +14,7 @@ import logging
 from pathlib import Path
 from typing import Any
 
-from claude_export_md.domain.manifest import Manifest, ManifestFile
+from claude_export_md.domain.manifest import Manifest, ManifestFile, prune_urls
 from claude_export_md.domain.redaction import redact_text
 from claude_export_md.errors import CorruptFileError
 
@@ -37,6 +37,10 @@ def find_manifest(root: Path) -> Path | None:
         return None
     candidates = sorted(root.glob(MANIFEST_GLOB))
     return candidates[0] if candidates else None
+
+
+#: Campos propios de `Manifest`; el resto de la raíz viaja a `extra` (CLAUDE.md §1.3).
+_OWN_KEYS = frozenset({"path", "files"})
 
 
 def _entries(payload: Any) -> list[Any]:
@@ -66,4 +70,24 @@ def parse_manifest(path: Path) -> Manifest:
         # El nombre del manifiesto lleva el uuid de la cuenta: no se loguea en crudo.
         logger.warning("El manifiesto %s no declara archivos reconocibles", redact_text(path.name))
     files = [ManifestFile.model_validate(entry) for entry in raw_entries if isinstance(entry, dict)]
-    return Manifest(path=path.name, files=files)
+    return Manifest(path=path.name, files=files, **_root_extras(payload))
+
+
+def _root_extras(payload: Any) -> dict[str, Any]:
+    """Claves de la raíz que no son la lista de archivos: `created_at`, `version`, …
+
+    No se descartan (CLAUDE.md §1.3): `created_at` es la fecha en que Anthropic generó
+    el export y es la única fecha que `convert` puede poner en el README sin mirar el
+    reloj (CLAUDE.md §1.4). Como en `ManifestFile`, nunca se conserva una URL de
+    descarga: son de un solo uso y expiran. La poda es RECURSIVA (`prune_urls`), así
+    que un `delivery: {"url": …}` tampoco sobrevive.
+    """
+    if not isinstance(payload, dict):
+        return {}
+    kept = {
+        key: value
+        for key, value in payload.items()
+        if key not in _OWN_KEYS and key not in _LIST_KEYS
+    }
+    pruned: dict[str, Any] = prune_urls(kept)
+    return pruned

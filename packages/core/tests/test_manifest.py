@@ -140,6 +140,68 @@ def test_real_manifest_fixture_declares_its_entries() -> None:
     assert all(entry.part == 0 for entry in manifest.files)
 
 
+def test_the_root_keys_that_are_not_the_file_list_are_kept(tmp_path: Path) -> None:
+    """`created_at` (cuándo generó Anthropic el export) no se descarta: CLAUDE.md §1.3.
+
+    Es la única fecha que `convert` puede poner en el README de la salida sin mirar el
+    reloj (CLAUDE.md §1.4). Las URLs de descarga se siguen tirando siempre.
+    """
+    path = _write(
+        tmp_path,
+        {
+            "created_at": "2026-09-18T16:59:47.566776+00:00",
+            "version": "1.0",
+            "export_url": "https://example.com/expira",
+            "data_files": [{"category": "memories", "part": 0}],
+        },
+    )
+
+    manifest = parse_manifest(path)
+
+    assert (manifest.model_extra or {})["created_at"] == "2026-09-18T16:59:47.566776+00:00"
+    assert (manifest.model_extra or {})["version"] == "1.0"
+    assert "export_url" not in (manifest.model_extra or {})
+
+
+def test_urls_are_pruned_at_every_depth_not_only_at_the_root(tmp_path: Path) -> None:
+    """CLAUDE.md §1.5: una URL de descarga no sobrevive esté donde esté.
+
+    Antes la poda miraba solo el primer nivel del diccionario, así que un
+    `delivery.url` anidado acababa intacto en `Manifest.extra` y de ahí a
+    `_report/inventory.json`. Son de un solo uso y expiran: no se guardan nunca.
+    """
+    path = _write(
+        tmp_path,
+        {
+            "created_at": "2026-09-18T16:59:47.566776+00:00",
+            "delivery": {
+                "url": "https://example.com/uno",
+                "export_url": "https://example.com/dos",
+                "region": "eu",
+            },
+            "links": [{"download_url": "https://example.com/tres"}, {"kind": "zip"}],
+            "data_files": [
+                {
+                    "category": "memories",
+                    "part": 0,
+                    "delivery": {"signedUrl": "https://example.com/cuatro", "bytes": 12},
+                }
+            ],
+        },
+    )
+
+    manifest = parse_manifest(path)
+    extra = manifest.model_extra or {}
+
+    assert "https://example.com" not in json.dumps(manifest.model_dump(mode="json"))
+    assert extra["delivery"] == {"region": "eu"}
+    assert extra["links"] == [{}, {"kind": "zip"}]
+    assert (manifest.files[0].model_extra or {})["delivery"] == {"bytes": 12}
+    # Podar no puede costar la información que sí sirve.
+    assert extra["created_at"] == "2026-09-18T16:59:47.566776+00:00"
+    assert manifest.declared_parts() == {"memories": [0]}
+
+
 def test_declared_parts_from_top_level_array_and_filename(tmp_path: Path) -> None:
     path = _write(tmp_path, [{"filename": "conversations-002.zip"}, {"filename": "frames-000.zip"}])
     manifest = parse_manifest(path)

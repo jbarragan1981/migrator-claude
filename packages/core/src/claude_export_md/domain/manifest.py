@@ -19,6 +19,28 @@ from pydantic import BaseModel, ConfigDict, model_validator
 #: y colapsaba las 5 categorías de un zip fechado en una categoría inventada).
 _PART_SUFFIX = re.compile(r"^(?P<category>.+?)[-_](?P<part>\d{3}|0\d{3,5})(?:\.zip)?$")
 
+#: Marca de una clave que lleva una URL de descarga (`export_url`, `signedUrl`, `url`).
+_URL_KEY = "url"
+
+
+def prune_urls(value: Any) -> Any:  # noqa: ANN401 - JSON de esquema libre
+    """Quita, a CUALQUIER profundidad, las claves cuyo nombre contenga "url".
+
+    Las URLs del manifiesto son de un solo uso, expiran y no se usan nunca
+    (CLAUDE.md §1.5), así que no entran al modelo: ni en el primer nivel ni dentro de
+    un `delivery: {"url": …}`. Podar solo la raíz dejaba la promesa a medias y las
+    URLs anidadas acababan en `Manifest.extra` y de ahí en `_report/inventory.json`.
+    Es lo único que este módulo descarta: el resto de claves desconocidas se conserva
+    (CLAUDE.md §1.3).
+    """
+    if isinstance(value, dict):
+        return {
+            key: prune_urls(item) for key, item in value.items() if _URL_KEY not in str(key).lower()
+        }
+    if isinstance(value, list):
+        return [prune_urls(item) for item in value]
+    return value
+
 
 def split_part_suffix(name: str) -> tuple[str, int] | None:
     """`conversations-000.zip` → `("conversations", 0)`. `None` si no tiene sufijo de parte."""
@@ -50,8 +72,9 @@ class ManifestFile(BaseModel):
         """
         if not isinstance(data, dict):
             return data
-        # Nunca conservamos URLs de descarga (un solo uso, expiran, son secretos).
-        values: dict[str, Any] = {k: v for k, v in data.items() if "url" not in k.lower()}
+        # Nunca conservamos URLs de descarga (un solo uso, expiran, son secretos),
+        # tampoco las anidadas dentro de una clave que sí se conserva.
+        values: dict[str, Any] = prune_urls(data)
         category = values.get("category") or values.get("type") or values.get("name")
         part = values.get("part")
         if part is None:

@@ -1,0 +1,54 @@
+{#
+  Portada de la salida (CLAUDE.md §5). Variables disponibles:
+    source              nombre de la carpeta/zip del export del que salió todo esto
+    format_version      "batched-manifest" o "legacy-single-zip"
+    counts              ítems convertidos por categoría, ya ordenados
+    export_created_at   cuándo generó Anthropic el export (fecha del MANIFIESTO), o null
+    missing_categories  categorías que el export no traía
+  La fecha de la conversión NO va aquí: dos corridas del mismo export tienen que
+  producir los mismos bytes (CLAUDE.md §1.4, spec 04 CA-1).
+-#}
+# Export de Claude.ai en Markdown
+
+Esta carpeta es la conversión a Markdown de una exportación de datos de Claude.ai.
+Se generó con `claude-export-md` en la máquina del usuario: nada se descargó de
+Internet y nada salió de ella.
+
+## De dónde salió
+
+| Dato | Valor |
+| --- | --- |
+| Export | `{{ source | md_cell }}` |
+| Formato | `{{ format_version | md_cell }}` |
+{% if export_created_at %}
+| Fecha del export | {{ export_created_at | md_cell }} |
+{% endif %}
+
+{% if counts %}
+## Qué se convirtió
+
+| Categoría | Ítems |
+| --- | --- |
+{% for category, count in counts.items() %}
+| {{ category | md_cell }} | {{ count }} |
+{% endfor %}
+
+{% endif %}
+## Cómo está organizado
+
+- [`_index.md`](_index.md) — índice de todo, con enlaces relativos.
+- `memories/` — las memorias de la cuenta, respetando su ruta original.
+- `conversations/YYYY/MM/` — una conversación por archivo; los bloques de código
+  largos que traía el mensaje se extrajeron a su carpeta `artifacts/`.
+- `_report/` — `summary.json` (qué se convirtió), `errors.jsonl` (una línea por ítem
+  que no se pudo parsear) e `inventory.json` (qué traía el export).
+
+## Lo que todavía no está
+
+Esta versión convierte memorias y conversaciones. Los proyectos (`projects/`), los
+artefactos (`frames/`) y el perfil de la cuenta (`account/`) se añadirán más adelante:
+mientras tanto, esos datos siguen intactos en el export original.
+{% if missing_categories %}
+
+Categorías que este export no traía: {{ missing_categories | join(', ') }}.
+{% endif %}

@@ -1,0 +1,36 @@
+{#
+  Índice global de la salida (spec 04 CA-7). Variables disponibles:
+    conversations       filas ya ordenadas (fecha descendente, sin fecha al final):
+                        {day, title, link, project, messages}
+    memories            lo mismo para las memorias (messages siempre null)
+    conversation_count  cuántas conversaciones se convirtieron
+    memory_count        cuántas memorias se convirtieron
+  `link` es siempre una ruta relativa a esta misma carpeta.
+  Los textos del usuario van por `md_cell`: un `|` sin escapar partiría la fila.
+  Nada de la corrida actual (fecha, versión) puede aparecer aquí: spec 04 CA-10.
+-#}
+# Índice del export
+
+{% if conversation_count %}
+## Conversaciones ({{ conversation_count }})
+
+| Fecha | Conversación | Proyecto | Mensajes |
+| --- | --- | --- | --- |
+{% for row in conversations %}
+| {{ row.day | md_cell }} | [{{ row.title | md_cell }}]({{ row.link }}) | {{ row.project | md_cell }} | {{ row.messages | md_cell }} |
+{% endfor %}
+
+{% endif %}
+{% if memory_count %}
+## Memorias ({{ memory_count }})
+
+| Actualizada | Memoria | Proyecto |
+| --- | --- | --- |
+{% for row in memories %}
+| {{ row.day | md_cell }} | [{{ row.title | md_cell }}]({{ row.link }}) | {{ row.project | md_cell }} |
+{% endfor %}
+
+{% endif %}
+{% if not conversation_count and not memory_count %}
+No se convirtió ningún ítem. Mirá `_report/errors.jsonl` para saber por qué.
+{% endif %}
