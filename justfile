@@ -18,10 +18,12 @@ convert DIR OUT:
 
 test:
     uv run pytest packages/core apps/cli apps/api -q --cov=claude_export_md --cov-fail-under=85
-    pnpm -C apps/web test --watch=false
+    pnpm -C apps/web test '--' --watch=false
 
 lint:
-    uv run ruff check . && uv run ruff format --check . && uv run mypy --strict packages/core
+    uv run ruff check .
+    uv run ruff format --check .
+    uv run mypy --strict packages/core
     pnpm -C apps/web lint
 
 api:

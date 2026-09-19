@@ -1,0 +1,15 @@
+{
+  "name": "claude-export-md-web",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Front Angular de claude-export-md. Esqueleto: la app real (Angular 21 standalone, signals, Material, Tailwind, Transloco) se construye en M4 — ver CLAUDE.md §3 y docs/specs/07-web.md.",
+  "scripts": {
+    "start": "node scripts/noop-start.cjs",
+    "test": "node scripts/noop-test.cjs",
+    "lint": "node scripts/noop-lint.cjs"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "packageManager": "pnpm@9.15.9"
+}
