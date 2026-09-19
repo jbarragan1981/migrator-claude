@@ -1,0 +1,460 @@
+[
+  {
+    "account": {
+      "uuid": "<str:36>"
+    },
+    "chat_messages": [
+      {
+        "content": [
+          {
+            "citations": [],
+            "flags": null,
+            "start_timestamp": "<str:27>",
+            "stop_timestamp": "<str:27>",
+            "text": "<str:381>",
+            "type": "<str:4>"
+          }
+        ],
+        "created_at": "<str:27>",
+        "parent_message_uuid": "<str:36>",
+        "sender": "<str:5>",
+        "text": "<str:381>",
+        "updated_at": "<str:27>",
+        "uuid": "<str:36>"
+      },
+      {
+        "content": [
+          {
+            "alternative_display_type": null,
+            "cut_off": false,
+            "flags": null,
+            "hidden": false,
+            "signature": null,
+            "start_timestamp": "<str:27>",
+            "stop_timestamp": "<str:27>",
+            "summaries": [
+              {
+                "summary": "<str:63>"
+              },
+              {
+                "summary": "<str:66>"
+              }
+            ],
+            "thinking": "<str:147>",
+            "thinking_hidden": false,
+            "truncated": false,
+            "type": "<str:8>"
+          },
+          {
+            "approval_key": null,
+            "approval_key_legacy": null,
+            "approval_options": null,
+            "context": null,
+            "display_content": {
+              "text": "<str:52>",
+              "type": "<str:4>"
+            },
+            "flags": null,
+            "hidden_in_chat": null,
+            "icon_name": "<str:4>",
+            "id": "<str:30>",
+            "input": {
+              "description": "<str:52>",
+              "path": "<str:41>"
+            },
+            "integration_icon_url": null,
+            "integration_name": null,
+            "is_mcp_app": null,
+            "mcp_server_url": null,
+            "message": "<str:52>",
+            "name": "<str:4>",
+            "start_timestamp": "<str:27>",
+            "stop_timestamp": "<str:27>",
+            "tool_identifier": null,
+            "type": "<str:8>"
+          },
+          {
+            "content": [
+              {
+                "text": "<str:13388>",
+                "type": "<str:4>",
+                "uuid": "<str:36>"
+              }
+            ],
+            "display_content": null,
+            "flags": null,
+            "hidden_in_chat": null,
+            "icon_name": "<str:4>",
+            "integration_icon_url": null,
+            "integration_name": null,
+            "is_error": false,
+            "mcp_server_url": null,
+            "message": null,
+            "meta": {
+              "output_format_category": "<str:2>"
+            },
+            "name": "<str:4>",
+            "start_timestamp": null,
+            "stop_timestamp": null,
+            "structured_content": null,
+            "tool_use_id": "<str:30>",
+            "type": "<str:11>"
+          }
+        ],
+        "created_at": "<str:27>",
+        "parent_message_uuid": "<str:36>",
+        "sender": "<str:9>",
+        "text": "<str:1762>",
+        "updated_at": "<str:27>",
+        "uuid": "<str:36>"
+      },
+      {
+        "content": [
+          {
+            "citations": [],
+            "flags": null,
+            "start_timestamp": "<str:27>",
+            "stop_timestamp": "<str:27>",
+            "text": "<str:381>",
+            "type": "<str:4>"
+          }
+        ],
+        "created_at": "<str:27>",
+        "parent_message_uuid": "<str:36>",
+        "sender": "<str:5>",
+        "text": "<str:381>",
+        "updated_at": "<str:27>",
+        "uuid": "<str:36>"
+      }
+    ],
+    "created_at": "<str:27>",
+    "name": "<str:47>",
+    "project_uuid": null,
+    "summary": "<str:0>",
+    "updated_at": "<str:27>",
+    "uuid": "<str:36>"
+  },
+  {
+    "account": {
+      "uuid": "<str:36>"
+    },
+    "chat_messages": [
+      {
+        "content": [
+          {
+            "citations": [],
+            "flags": null,
+            "start_timestamp": "<str:27>",
+            "stop_timestamp": "<str:27>",
+            "text": "<str:381>",
+            "type": "<str:4>"
+          }
+        ],
+        "created_at": "<str:27>",
+        "parent_message_uuid": "<str:36>",
+        "sender": "<str:5>",
+        "text": "<str:381>",
+        "updated_at": "<str:27>",
+        "uuid": "<str:36>"
+      },
+      {
+        "content": [
+          {
+            "alternative_display_type": null,
+            "cut_off": false,
+            "flags": null,
+            "hidden": false,
+            "signature": null,
+            "start_timestamp": "<str:27>",
+            "stop_timestamp": "<str:27>",
+            "summaries": [
+              {
+                "summary": "<str:62>"
+              },
+              {
+                "summary": "<str:38>"
+              }
+            ],
+            "thinking": "<str:205>",
+            "thinking_hidden": false,
+            "truncated": false,
+            "type": "<str:8>"
+          },
+          {
+            "approval_key": null,
+            "approval_key_legacy": null,
+            "approval_options": null,
+            "context": null,
+            "display_content": {
+              "text": "<str:75>",
+              "type": "<str:4>"
+            },
+            "flags": null,
+            "hidden_in_chat": null,
+            "icon_name": "<str:4>",
+            "id": "<str:30>",
+            "input": {
+              "description": "<str:75>",
+              "path": "<str:41>"
+            },
+            "integration_icon_url": null,
+            "integration_name": null,
+            "is_mcp_app": null,
+            "mcp_server_url": null,
+            "message": "<str:75>",
+            "name": "<str:4>",
+            "start_timestamp": "<str:27>",
+            "stop_timestamp": "<str:27>",
+            "tool_identifier": null,
+            "type": "<str:8>"
+          },
+          {
+            "content": [
+              {
+                "text": "<str:13388>",
+                "type": "<str:4>",
+                "uuid": "<str:36>"
+              }
+            ],
+            "display_content": null,
+            "flags": null,
+            "hidden_in_chat": null,
+            "icon_name": "<str:4>",
+            "integration_icon_url": null,
+            "integration_name": null,
+            "is_error": false,
+            "mcp_server_url": null,
+            "message": null,
+            "meta": {
+              "output_format_category": "<str:2>"
+            },
+            "name": "<str:4>",
+            "start_timestamp": null,
+            "stop_timestamp": null,
+            "structured_content": null,
+            "tool_use_id": "<str:30>",
+            "type": "<str:11>"
+          }
+        ],
+        "created_at": "<str:27>",
+        "parent_message_uuid": "<str:36>",
+        "sender": "<str:9>",
+        "text": "<str:23134>",
+        "updated_at": "<str:27>",
+        "uuid": "<str:36>"
+      }
+    ],
+    "created_at": "<str:27>",
+    "name": "<str:47>",
+    "project_uuid": null,
+    "summary": "<str:0>",
+    "updated_at": "<str:27>",
+    "uuid": "<str:36>"
+  },
+  {
+    "account": {
+      "uuid": "<str:36>"
+    },
+    "chat_messages": [
+      {
+        "content": [
+          {
+            "citations": [],
+            "flags": null,
+            "start_timestamp": "<str:27>",
+            "stop_timestamp": "<str:27>",
+            "text": "<str:785>",
+            "type": "<str:4>"
+          }
+        ],
+        "created_at": "<str:27>",
+        "parent_message_uuid": "<str:36>",
+        "sender": "<str:5>",
+        "text": "<str:785>",
+        "updated_at": "<str:27>",
+        "uuid": "<str:36>"
+      },
+      {
+        "content": [
+          {
+            "alternative_display_type": null,
+            "cut_off": false,
+            "flags": null,
+            "hidden": false,
+            "signature": null,
+            "start_timestamp": "<str:27>",
+            "stop_timestamp": "<str:27>",
+            "summaries": [
+              {
+                "summary": "<str:55>"
+              },
+              {
+                "summary": "<str:56>"
+              },
+              {
+                "summary": "<str:56>"
+              }
+            ],
+            "thinking": "<str:4025>",
+            "thinking_hidden": false,
+            "truncated": false,
+            "type": "<str:8>"
+          },
+          {
+            "approval_key": null,
+            "approval_key_legacy": null,
+            "approval_options": null,
+            "context": null,
+            "display_content": {
+              "text": "<str:56>",
+              "type": "<str:4>"
+            },
+            "flags": null,
+            "hidden_in_chat": null,
+            "icon_name": "<str:4>",
+            "id": "<str:30>",
+            "input": {
+              "description": "<str:56>",
+              "path": "<str:32>"
+            },
+            "integration_icon_url": null,
+            "integration_name": null,
+            "is_mcp_app": null,
+            "mcp_server_url": null,
+            "message": "<str:56>",
+            "name": "<str:4>",
+            "start_timestamp": "<str:27>",
+            "stop_timestamp": "<str:27>",
+            "tool_identifier": null,
+            "type": "<str:8>"
+          },
+          {
+            "content": [
+              {
+                "text": "<str:18833>",
+                "type": "<str:4>",
+                "uuid": "<str:36>"
+              }
+            ],
+            "display_content": null,
+            "flags": null,
+            "hidden_in_chat": null,
+            "icon_name": "<str:4>",
+            "integration_icon_url": null,
+            "integration_name": null,
+            "is_error": false,
+            "mcp_server_url": null,
+            "message": null,
+            "meta": {
+              "output_format_category": "<str:2>"
+            },
+            "name": "<str:4>",
+            "start_timestamp": null,
+            "stop_timestamp": null,
+            "structured_content": null,
+            "tool_use_id": "<str:30>",
+            "type": "<str:11>"
+          }
+        ],
+        "created_at": "<str:27>",
+        "parent_message_uuid": "<str:36>",
+        "sender": "<str:9>",
+        "text": "<str:27097>",
+        "updated_at": "<str:27>",
+        "uuid": "<str:36>"
+      },
+      {
+        "content": [
+          {
+            "alternative_display_type": null,
+            "cut_off": false,
+            "flags": null,
+            "hidden": false,
+            "signature": null,
+            "start_timestamp": "<str:27>",
+            "stop_timestamp": "<str:27>",
+            "summaries": [
+              {
+                "summary": "<str:66>"
+              }
+            ],
+            "thinking": "<str:320>",
+            "thinking_hidden": false,
+            "truncated": false,
+            "type": "<str:8>"
+          },
+          {
+            "approval_key": null,
+            "approval_key_legacy": null,
+            "approval_options": null,
+            "context": null,
+            "display_content": {
+              "json_block": "<str:136>",
+              "type": "<str:10>"
+            },
+            "flags": null,
+            "hidden_in_chat": null,
+            "icon_name": "<str:11>",
+            "id": "<str:30>",
+            "input": {
+              "command": "<str:102>",
+              "description": "<str:51>"
+            },
+            "integration_icon_url": null,
+            "integration_name": null,
+            "is_mcp_app": null,
+            "mcp_server_url": null,
+            "message": "<str:51>",
+            "name": "<str:9>",
+            "start_timestamp": "<str:27>",
+            "stop_timestamp": "<str:27>",
+            "tool_identifier": null,
+            "type": "<str:8>"
+          },
+          {
+            "content": [
+              {
+                "text": "<str:2680>",
+                "type": "<str:4>",
+                "uuid": "<str:36>"
+              }
+            ],
+            "display_content": {
+              "json_block": "<str:2680>",
+              "type": "<str:10>"
+            },
+            "flags": null,
+            "hidden_in_chat": null,
+            "icon_name": "<str:11>",
+            "integration_icon_url": null,
+            "integration_name": null,
+            "is_error": false,
+            "mcp_server_url": null,
+            "message": null,
+            "meta": {
+              "output_format_category": "<str:4>"
+            },
+            "name": "<str:9>",
+            "start_timestamp": null,
+            "stop_timestamp": null,
+            "structured_content": null,
+            "tool_use_id": "<str:30>",
+            "type": "<str:11>"
+          }
+        ],
+        "created_at": "<str:27>",
+        "parent_message_uuid": "<str:36>",
+        "sender": "<str:9>",
+        "text": "<str:36923>",
+        "updated_at": "<str:27>",
+        "uuid": "<str:36>"
+      }
+    ],
+    "created_at": "<str:27>",
+    "name": "<str:48>",
+    "project_uuid": null,
+    "summary": "<str:0>",
+    "updated_at": "<str:27>",
+    "uuid": "<str:36>"
+  }
+]

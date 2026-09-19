@@ -1,0 +1,39 @@
+{
+  "account_uuid": "<str:36>",
+  "conversations_memory": "<str:5666>",
+  "memory_files": [
+    {
+      "content": "<str:1522>",
+      "path": "<str:39>",
+      "updated_at": "<str:32>"
+    },
+    {
+      "content": "<str:924>",
+      "path": "<str:39>",
+      "updated_at": "<str:32>"
+    },
+    {
+      "content": "<str:819>",
+      "path": "<str:35>",
+      "updated_at": "<str:32>"
+    }
+  ],
+  "project_memories": {
+    "171cfb43-a1e8-c21f-c51f-77c2135e1b6a": "<str:4533>",
+    "1f82b2f4-b6e4-c03c-e7cb-55e6a68d47ba": "<str:6085>",
+    "361ab264-751c-6c5f-fef1-dd6077dad712": "<str:3647>",
+    "567e2df3-5e23-7ec3-8b7d-aa55ab6c8b80": "<str:3647>",
+    "8760ad02-dbdf-1b94-a5d7-6e755fefed47": "<str:6527>",
+    "8b3e2b3c-c4c5-3a4e-7c1e-eea6b249b95d": "<str:2596>",
+    "978f5ef3-721b-8623-5a4a-87bac8f7c64a": "<str:2514>",
+    "a0bf8b2f-4e37-9766-b40e-7d12539a0b42": "<str:5929>",
+    "c1e7b46b-368d-280b-cd97-13ce53001137": "<str:3359>",
+    "c34e3fee-861d-d4ed-6a42-e5e0ba82db66": "<str:3523>",
+    "c951a8d1-6784-ad89-79ca-091c4a7f4cad": "<str:5718>",
+    "da12b370-7fbe-693c-3dd9-2247525b6718": "<str:3887>",
+    "e222aa21-aa20-f46e-f741-d1f5848c6fa3": "<str:7102>",
+    "e4b215e7-308f-d9fc-fc34-ca0027c376b8": "<str:2960>",
+    "f362ba63-a5ea-231c-3eaa-21e201525cdf": "<str:2741>",
+    "f7aaaa99-707b-2967-da37-553b701e698b": "<str:2358>"
+  }
+}

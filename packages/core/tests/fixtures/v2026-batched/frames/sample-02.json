@@ -1,0 +1,28 @@
+{
+  "active_version": "<str:15>",
+  "id": "<str:36>",
+  "kind": "<str:8>",
+  "owner_account": "<str:36>",
+  "updated_at": "<str:25>",
+  "versions": [
+    {
+      "created_at": "<str:25>",
+      "description": "<str:181>",
+      "id": "<str:15>",
+      "title": "<str:28>"
+    },
+    {
+      "created_at": "<str:25>",
+      "description": "<str:181>",
+      "id": "<str:15>",
+      "title": "<str:28>"
+    },
+    {
+      "created_at": "<str:25>",
+      "description": "<str:181>",
+      "id": "<str:15>",
+      "title": "<str:28>"
+    }
+  ],
+  "visibility": "<str:7>"
+}
