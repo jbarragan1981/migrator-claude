@@ -1,0 +1,104 @@
+{#
+  Un artefacto de `frames` (spec 04). Variables disponibles:
+    frame          entidad Frame completa, por si una plantilla propia necesita más
+    id             identificador del artefacto en el export
+    type           siempre "frame"
+    title          título de la versión activa, o de cualquier versión, o el `kind`
+    created_at     ISO-8601 UTC derivado de la versión MÁS ANTIGUA de versions[]; null si
+                   ninguna trae fecha (el artefacto no tiene `created_at` propio)
+    updated_at     ISO-8601 UTC del artefacto, o null
+    source_file    archivo del export del que salió
+    kind           qué tipo de artefacto dice el export que es; null si no vino
+    visibility     visibilidad declarada en el export; null si no vino
+    owner_account  uuid de la cuenta dueña; null si no vino
+    active_version identificador de la versión activa TAL CUAL vino (aunque no coincida)
+    active         la versión activa ya resuelta: {id, title, description, created_at};
+                   null si `active_version` no coincide con ninguna o no vino (CA-3)
+    versions       una fila por versión: {version, id, title, description, created_at,
+                   active}
+    version_count  cuántas versiones trae el artefacto
+    tags           lista de etiquetas del frontmatter
+    extra          campos que no reconocemos, tal cual vinieron
+    payload_json   el JSON ORIGINAL completo del artefacto, ya formateado; "" si no hay
+    notice         por qué no hay contenido: el export no lo trae (spec 03, frames CA-2)
+    notes          frases fijas para cuando no hay nada que mostrar: no_versions,
+                   no_active_version, payload_available (solo se imprime si hay JSON que
+                   enseñar) y active_unmatched (null si la activa sí coincide)
+  Nada de la corrida actual (fecha, versión) puede aparecer aquí: spec 04 CA-10.
+-#}
+---
+id: {{ id | yaml_value }}
+type: {{ type | yaml_value }}
+title: {{ title | yaml_value }}
+created_at: {{ created_at | yaml_value }}
+updated_at: {{ updated_at | yaml_value }}
+source_file: {{ source_file | yaml_value }}
+{% if kind is not none %}
+kind: {{ kind | yaml_value }}
+{% endif %}
+{% if visibility is not none %}
+visibility: {{ visibility | yaml_value }}
+{% endif %}
+version_count: {{ version_count | yaml_value }}
+tags: {{ tags | yaml_inline }}
+{% if extra %}
+extra:
+{{ extra | yaml_block }}
+{% endif %}
+---
+
+# {{ title }}
+
+| Campo | Valor |
+|---|---|
+| Identificador | `{{ id | md_cell }}` |
+| Tipo (`kind`) | {{ kind | md_cell }} |
+| Visibilidad | {{ visibility | md_cell }} |
+| Cuenta dueña | {{ owner_account | md_cell }} |
+| Versión activa | {{ active_version | md_cell }} |
+| Versiones | {{ version_count | md_cell }} |
+
+## Contenido
+
+> {{ notice }}
+{% if payload_json %}
+>
+> {{ notes.payload_available }}
+{% endif %}
+
+## Versión activa
+
+{% if active %}
+**{{ active.title | md_cell }}** — `{{ active.id }}`{{ " — " ~ active.created_at if active.created_at else "" }}
+{% if active.description %}
+
+{{ active.description }}
+{% endif %}
+{% elif notes.active_unmatched %}
+_{{ notes.active_unmatched }}_
+{% else %}
+_{{ notes.no_active_version }}_
+{% endif %}
+
+## Versiones
+
+{% if versions %}
+| Versión | Título | Creada | Activa | Descripción |
+|---|---|---|---|---|
+{% for version in versions %}
+| `{{ version.id | md_cell }}` | {{ version.title | md_cell }} | {{ version.created_at | md_cell }} | {{ "sí" if version.active else "no" }} | {{ version.description | md_cell }} |
+{% endfor %}
+{% else %}
+_{{ notes.no_versions }}_
+{% endif %}
+{% if payload_json %}
+
+## JSON original del artefacto
+
+<details>
+<summary>Todo lo que el export trae de este artefacto, sin tocar</summary>
+
+{{ payload_json | code_fence("json") }}
+
+</details>
+{% endif %}
