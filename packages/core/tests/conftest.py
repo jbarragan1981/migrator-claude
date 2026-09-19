@@ -6,10 +6,15 @@ Todos los fixtures son SINTÉTICOS (datos inventados). Nunca se usa `exports/`.
 from __future__ import annotations
 
 import json
+from collections.abc import Iterator, Sequence
+from contextlib import contextmanager
 from pathlib import Path
-from typing import Any
+from typing import IO, Any
 
 import pytest
+
+from claude_export_md.domain.manifest import Manifest
+from claude_export_md.ports.source import ExportSource, SourceFile
 
 FIXTURES = Path(__file__).parent / "fixtures" / "synthetic"
 
@@ -60,3 +65,50 @@ def make_big_array(path: Path, items: int) -> Path:
             )
         fp.write("]")
     return path
+
+
+class CountingStream:
+    """Stream que cuenta cuántos bytes se le han leído."""
+
+    def __init__(self, inner: IO[bytes], counter: list[int]) -> None:
+        self._inner = inner
+        self._counter = counter
+
+    def read(self, size: int = -1) -> bytes:
+        data = self._inner.read(size)
+        self._counter[0] += len(data)
+        return data
+
+    def close(self) -> None:
+        self._inner.close()
+
+
+class CountingSource:
+    """Decorador de `ExportSource` que cuenta los bytes leídos del origen.
+
+    Es la forma de comprobar que un parser no carga el archivo entero (CA-C3): si tras
+    pedir el primer ítem solo se leyó una fracción del archivo, no hubo `json.load`.
+    """
+
+    def __init__(self, inner: ExportSource) -> None:
+        self._inner = inner
+        self.read_bytes = [0]
+
+    @property
+    def root(self) -> str:
+        return self._inner.root
+
+    @property
+    def format_version(self) -> str:
+        return self._inner.format_version
+
+    def files(self) -> Sequence[SourceFile]:
+        return self._inner.files()
+
+    def manifest(self) -> Manifest | None:
+        return self._inner.manifest()
+
+    @contextmanager
+    def open_file(self, file: SourceFile) -> Iterator[IO[bytes]]:
+        with self._inner.open_file(file) as fp:
+            yield CountingStream(fp, self.read_bytes)  # type: ignore[misc]

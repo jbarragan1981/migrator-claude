@@ -1,0 +1,59 @@
+{#
+  Una conversación (spec 04). Variables disponibles:
+    conversation  entidad Conversation completa, por si una plantilla propia necesita más
+    id            uuid de la conversación en el export
+    type          siempre "conversation"
+    title         `name` del export, o "Conversación sin título" si venía vacío
+    created_at    ISO-8601 UTC, o null si el export no la trae
+    updated_at    ISO-8601 UTC, o null
+    source_file   archivo del export del que salió
+    project_id    uuid del proyecto, solo si `project_uuid` no era null
+    summary       `summary` del export; "" se emite, null se omite (spec 03 CA-4)
+    message_count cuántos mensajes se pudieron parsear
+    tags          lista de etiquetas del frontmatter
+    extra         campos que no reconocemos, tal cual vinieron
+    turns         un turno por mensaje: {heading, message, parts}
+                  parts[i].kind == "text" → parts[i].text se inserta tal cual
+                  cualquier otro kind     → parts[i].summary y parts[i].body van en <details>
+  Nada de la corrida actual (fecha, versión) puede aparecer aquí: spec 04 CA-10.
+-#}
+---
+id: {{ id | yaml_value }}
+type: {{ type | yaml_value }}
+title: {{ title | yaml_value }}
+created_at: {{ created_at | yaml_value }}
+updated_at: {{ updated_at | yaml_value }}
+source_file: {{ source_file | yaml_value }}
+{% if project_id %}
+project_id: {{ project_id | yaml_value }}
+{% endif %}
+{% if summary is not none %}
+summary: {{ summary | yaml_value }}
+{% endif %}
+message_count: {{ message_count | yaml_value }}
+tags: {{ tags | yaml_inline }}
+{% if extra %}
+extra:
+{{ extra | yaml_block }}
+{% endif %}
+---
+
+# {{ title }}
+{% for turn in turns %}
+
+## {{ turn.heading }}
+{% for part in turn.parts %}
+{% if part.kind == 'text' %}
+
+{{ part.text }}
+{% else %}
+
+<details>
+<summary>{{ part.summary }}</summary>
+
+{{ part.body }}
+
+</details>
+{% endif %}
+{% endfor %}
+{% endfor %}
