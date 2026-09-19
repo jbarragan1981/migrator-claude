@@ -1,0 +1,116 @@
+# serializer version: 1
+# name: test_snapshot_of_a_project_with_docs
+  dict({
+    'projects/otro/project.md': '''
+      ---
+      id: 99999999-8888-4777-8666-555555555555
+      type: project
+      title: Otro
+      created_at: '2026-01-02T03:04:05Z'
+      updated_at: '2026-02-03T04:05:06Z'
+      source_file: projects-000/projects/11111111-2222-4333-8444-555555555555.json
+      creator_id: aaaaaaaa-bbbb-4ccc-8ddd-eeeeeeeeeeee
+      doc_count: 0
+      tags: [project]
+      extra:
+        is_private: true
+      ---
+      
+      # Otro
+      
+      ## Descripción
+      
+      _El export trae la descripción de este proyecto vacía._
+      
+      ## Instrucciones
+      
+      _El export trae las instrucciones de este proyecto vacías._
+      
+      ## Documentos
+      
+      _Este proyecto no tiene documentos en el export._
+      
+      ## Conversaciones
+      
+      _Ninguna conversación de este export apunta a este proyecto._
+  
+    ''',
+    'projects/proyecto-sintetico/docs/guia-de-estilo.md': '''
+      ---
+      id: d0c0d0c0-1111-4222-8333-444444444444
+      type: project_doc
+      title: Guía de estilo.md
+      created_at: '2026-01-02T03:04:05Z'
+      updated_at: null
+      source_file: projects-000/projects/11111111-2222-4333-8444-555555555555.json
+      project_id: 11111111-2222-4333-8444-555555555555
+      filename: Guía de estilo.md
+      tags: [project-doc, project]
+      ---
+      
+      # Guía de estilo.md
+      
+      Documento del proyecto [Proyecto Sintético](../project.md).
+      
+      > El export no incluye el contenido de este documento: `docs[]` solo trae su nombre, su identificador y su fecha. No se ha inventado ningún texto.
+  
+    ''',
+    'projects/proyecto-sintetico/docs/notas.md': '''
+      ---
+      id: d0c0d0c0-5555-4666-8777-888888888888
+      type: project_doc
+      title: notas.md
+      created_at: '2026-01-02T03:04:05Z'
+      updated_at: null
+      source_file: projects-000/projects/11111111-2222-4333-8444-555555555555.json
+      project_id: 11111111-2222-4333-8444-555555555555
+      filename: notas.md
+      tags: [project-doc, project]
+      ---
+      
+      # notas.md
+      
+      Documento del proyecto [Proyecto Sintético](../project.md).
+      
+      Hola.
+  
+    ''',
+    'projects/proyecto-sintetico/project.md': '''
+      ---
+      id: 11111111-2222-4333-8444-555555555555
+      type: project
+      title: Proyecto Sintético
+      created_at: '2026-01-02T03:04:05Z'
+      updated_at: '2026-02-03T04:05:06Z'
+      source_file: projects-000/projects/11111111-2222-4333-8444-555555555555.json
+      creator_id: aaaaaaaa-bbbb-4ccc-8ddd-eeeeeeeeeeee
+      doc_count: 2
+      tags: [project]
+      extra:
+        is_private: true
+      ---
+      
+      # Proyecto Sintético
+      
+      ## Descripción
+      
+      Un proyecto de prueba
+      
+      ## Instrucciones
+      
+      Responde siempre en español.
+      
+      ## Documentos
+      
+      | Documento | Creado | Contenido |
+      |---|---|---|
+      | [Guía de estilo.md](docs/guia-de-estilo.md) | 2026-01-02T03:04:05Z | No disponible en este export |
+      | [notas.md](docs/notas.md) | 2026-01-02T03:04:05Z | Incluido en el archivo |
+      
+      ## Conversaciones
+      
+      _Ninguna conversación de este export apunta a este proyecto._
+  
+    ''',
+  })
+# ---
