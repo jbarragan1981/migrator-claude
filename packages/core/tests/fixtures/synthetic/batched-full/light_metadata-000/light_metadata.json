@@ -1,0 +1,12 @@
+{
+  "account": {
+    "uuid": "aaaaaaaa-0000-4000-8000-000000000001",
+    "email_address": "persona@example.com",
+    "full_name": "Persona Sintetica"
+  },
+  "settings": {
+    "locale": "es-CO",
+    "theme": "dark"
+  },
+  "exported_at": "2026-02-01T00:00:00.000000Z"
+}

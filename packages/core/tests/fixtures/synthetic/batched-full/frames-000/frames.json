@@ -1,0 +1,12 @@
+[
+  {
+    "uuid": "aaaa1111-0000-4000-8000-000000000001",
+    "kind": "artifact",
+    "payload": {"title": "Diagrama", "mime_type": "text/html"}
+  },
+  {
+    "uuid": "aaaa1111-0000-4000-8000-000000000002",
+    "kind": "unknown",
+    "payload": {}
+  }
+]

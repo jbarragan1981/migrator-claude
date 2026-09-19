@@ -19,3 +19,4 @@ claude-export-md serve     [--port 8000] [--open]   # levanta API + web estátic
 - **CA-5** `--json` imprime únicamente JSON en stdout (para scripts).
 - **CA-6** Rutas con espacios y acentos en Windows funcionan (test en CI con matriz windows-latest).
 - **CA-7** `uvx claude-export-md --help` funciona sin clonar el repo (M5).
+- **CA-8** Todo error de la librería (`ClaudeExportMdError`: formato desconocido, zip corrupto usado como origen…) se muestra como un mensaje de una línea en stderr y termina con código 2; nunca como traceback.

@@ -3,6 +3,9 @@ exports/
 output/
 *.zip
 member-manifest-*.json
+# Inventario generado sobre el export real: el core ya lo redacta (spec 01), pero
+# no se commitea nunca (red de seguridad, no la protección principal).
+docs/export-format/inventory.json
 .env
 .env.*
 # Python
@@ -13,6 +16,9 @@ __pycache__/
 .ruff_cache/
 .pytest_cache/
 htmlcov/
+.coverage
+.coverage.*
+coverage.xml
 dist/
 # Node
 node_modules/
