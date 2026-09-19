@@ -36,18 +36,40 @@ Internet y nada salió de ella.
 {% endif %}
 ## Cómo está organizado
 
+Solo se listan las carpetas que este export produjo: lo que no venía en el export no se
+crea vacío.
+
 - [`_index.md`](_index.md) — índice de todo, con enlaces relativos.
-- `memories/` — las memorias de la cuenta, respetando su ruta original.
+{% if counts.get('conversations') %}
 - `conversations/YYYY/MM/` — una conversación por archivo; los bloques de código
-  largos que traía el mensaje se extrajeron a su carpeta `artifacts/`.
+  largos que traía el mensaje se extrajeron a su carpeta `artifacts/`. Si la
+  conversación pertenecía a un proyecto, enlaza a su `project.md`.
+{% endif %}
+{% if counts.get('projects') %}
+- `projects/<proyecto>/` — `project.md` (nombre, descripción e instrucciones) y
+  `docs/` con un archivo por documento del proyecto. El `project.md` enumera las
+  conversaciones que apuntan al proyecto.
+{% endif %}
+{% if counts.get('memories') %}
+- `memories/` — las memorias de la cuenta, respetando su ruta original.
+{% endif %}
+{% if counts.get('frames') %}
+- `frames/` — un archivo por artefacto, con su metadata y el JSON original íntegro.
+{% endif %}
+{% if counts.get('light_metadata') %}
+- `account/` — el perfil de la cuenta (sin tokens ni secretos).
+{% endif %}
 - `_report/` — `summary.json` (qué se convirtió), `errors.jsonl` (una línea por ítem
   que no se pudo parsear) e `inventory.json` (qué traía el export).
 
-## Lo que todavía no está
+{% if counts.get('projects') or counts.get('frames') %}
+## Lo que el export no trae
 
-Esta versión convierte memorias y conversaciones. Los proyectos (`projects/`), los
-artefactos (`frames/`) y el perfil de la cuenta (`account/`) se añadirán más adelante:
-mientras tanto, esos datos siguen intactos en el export original.
+El export de Anthropic no incluye el CONTENIDO de los documentos de un proyecto ni el de
+los artefactos: solo su metadata (nombre, fechas, versiones). Cada archivo afectado lo
+dice con todas sus letras y no se ha inventado ningún texto; el JSON original de los
+artefactos se publica íntegro dentro de su `.md`.
+{% endif %}
 {% if missing_categories %}
 
 Categorías que este export no traía: {{ missing_categories | join(', ') }}.

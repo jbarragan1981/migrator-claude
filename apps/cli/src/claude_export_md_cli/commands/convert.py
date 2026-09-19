@@ -17,7 +17,8 @@ Flags del spec que esta versión NO implementa todavía (documentado en spec 05 
 
 from __future__ import annotations
 
-from collections.abc import Iterator
+import re
+from collections.abc import Iterator, Sequence
 from contextlib import contextmanager
 from pathlib import Path
 from typing import Annotated
@@ -43,8 +44,12 @@ from claude_export_md.usecases.convert import (
 stdout = Console()
 stderr = Console(stderr=True)
 
-#: Cuántas advertencias se muestran antes de remitir al informe completo.
+#: Cuántas FAMILIAS de advertencia se muestran antes de remitir al informe completo.
 MAX_WARNINGS = 5
+
+#: Lo que distingue dos avisos del mismo tipo: rutas, uuids, índices y cantidades. Al
+#: borrarlos queda la "forma" del mensaje, que es lo que se agrupa (ver `group_warnings`).
+_VARIABLE = re.compile(r"\S*[\d/\\]\S*")
 
 
 @contextmanager
@@ -76,13 +81,51 @@ def _summary_table(result: ConvertResult) -> Table:
     return table
 
 
+def group_warnings(warnings: Sequence[str]) -> list[str]:
+    """Una línea por FAMILIA de aviso, las menos repetidas primero.
+
+    Truncar la lista cruda escondía lo accionable: con 8 proyectos, tres avisos idénticos
+    de "documento sin contenido" ocupaban el cupo y dejaban fuera al de proyectos
+    huérfanos y al de credenciales, que salen UNA vez cada uno. Aquí los mensajes que
+    solo cambian en la ruta o en el uuid cuentan como uno (`_VARIABLE`), se muestra el
+    primero de la familia con cuántos más hay detrás, y el orden pone delante a los que
+    aparecen pocas veces, que son los que el usuario puede accionar.
+
+    El detalle completo, sin agrupar, sigue en `_report/summary.json`.
+    """
+    families: dict[str, list[str]] = {}
+    for warning in warnings:
+        families.setdefault(_VARIABLE.sub("·", warning), []).append(warning)
+    ordered = sorted(enumerate(families.values()), key=lambda item: (len(item[1]), item[0]))
+    return [_warning_line(family) for _first_seen, family in ordered]
+
+
+def _warning_line(family: Sequence[str]) -> str:
+    """El primer aviso de la familia y, si hay más, cuántos quedan detrás."""
+    others = len(family) - 1
+    if not others:
+        return family[0]
+    return f"{family[0]} (+{others} {'similar' if others == 1 else 'similares'})"
+
+
+def warning_summary(warnings: Sequence[str], limit: int = MAX_WARNINGS) -> list[str]:
+    """Lo que el usuario ve de las advertencias: familias agrupadas y el resto contado.
+
+    Se trunca por FAMILIA, no por advertencia cruda: así el cupo no se lo comen N copias
+    del mismo aviso y el informe no promete "y 6 más" que en realidad son el mismo.
+    """
+    lines = group_warnings(warnings)
+    if len(lines) <= limit:
+        return lines
+    remaining = len(lines) - limit
+    plural = "tipo" if remaining == 1 else "tipos"
+    return [*lines[:limit], f"… y {remaining} {plural} de aviso más en _report/summary.json"]
+
+
 def _report_problems(result: ConvertResult) -> None:
     """Advertencias y errores a stderr; nunca cambian el código de salida (CA-2)."""
-    for warning in result.report.warnings[:MAX_WARNINGS]:
-        stderr.print(f"[yellow]Aviso:[/yellow] {warning}")
-    remaining = result.warning_count - MAX_WARNINGS
-    if remaining > 0:
-        stderr.print(f"[yellow]Aviso:[/yellow] … y {remaining} más en _report/summary.json")
+    for line in warning_summary(result.report.warnings):
+        stderr.print(f"[yellow]Aviso:[/yellow] {line}")
     if result.error_count:
         plural = "ítems" if result.error_count != 1 else "ítem"
         stderr.print(

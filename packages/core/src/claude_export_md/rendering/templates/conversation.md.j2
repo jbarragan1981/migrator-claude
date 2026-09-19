@@ -8,6 +8,9 @@
     updated_at    ISO-8601 UTC, o null
     source_file   archivo del export del que salió
     project_id    uuid del proyecto, solo si `project_uuid` no era null
+    project_title nombre del proyecto si el export lo trae (lo cruza usecases/links.py);
+                  null si el `project_uuid` no corresponde a ningún proyecto conocido
+    project_link  enlace relativo a `projects/<slug>/project.md`; null si no resolvió
     summary       `summary` del export; "" se emite, null se omite (spec 03 CA-4)
     message_count cuántos mensajes se pudieron parsear
     tags          lista de etiquetas del frontmatter
@@ -39,6 +42,10 @@ extra:
 ---
 
 # {{ title }}
+{% if project_link %}
+
+Proyecto: [{{ project_title }}]({{ project_link }})
+{% endif %}
 {% for turn in turns %}
 
 ## {{ turn.heading }}

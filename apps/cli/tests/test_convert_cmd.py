@@ -8,6 +8,7 @@ from pathlib import Path
 import pytest
 from typer.testing import CliRunner
 
+from claude_export_md_cli.commands.convert import MAX_WARNINGS, group_warnings, warning_summary
 from claude_export_md_cli.main import app
 
 runner = CliRunner()
@@ -152,3 +153,107 @@ def test_user_templates_are_used(export_dir: Path, out: Path, tmp_path: Path) ->
 
     assert result.exit_code == 0
     assert (out / "memories" / "profile.md").read_text(encoding="utf-8").endswith("MÍO\n")
+
+
+# ----------------------------------- advertencias: agrupar antes de truncar (CA-2)
+
+
+def test_repeated_warnings_collapse_into_one_line() -> None:
+    """Un mismo aviso repetido ocupa una línea, no N (bug de la revisión de M2)."""
+    lines = group_warnings(["a.json: sin `uuid`", "a.json: sin `uuid`", "algo único"])
+
+    assert lines == ["algo único", "a.json: sin `uuid` (+1 similar)"]
+
+
+def test_warnings_of_the_same_shape_collapse_even_with_different_names() -> None:
+    """La familia es el mensaje sin rutas ni identificadores: cambia el archivo, no el aviso."""
+    lines = group_warnings(
+        [
+            "projects-000/projects/a.json: el documento docs[0] no trae `uuid`",
+            "projects-000/projects/b.json: el documento docs[1] no trae `uuid`",
+            "projects-000/projects/c.json: el documento docs[0] no trae `uuid`",
+        ]
+    )
+
+    assert lines == [
+        "projects-000/projects/a.json: el documento docs[0] no trae `uuid` (+2 similares)"
+    ]
+
+
+def test_the_distinct_warnings_are_shown_before_the_repeated_ones() -> None:
+    """Lo accionable (una sola vez) no puede quedar detrás de 50 líneas iguales."""
+    repeated = [f"projects-000/projects/{index}.json: sin `uuid`" for index in range(50)]
+    unique = "2 conversaciones apuntan a 1 proyecto que este export no trae"
+
+    lines = group_warnings([*repeated, unique])
+
+    assert lines[0] == unique
+
+
+def test_no_warning_is_invented_when_there_are_none() -> None:
+    assert group_warnings([]) == []
+
+
+def test_the_summary_truncates_by_family_and_counts_the_rest() -> None:
+    """Se muestran hasta MAX_WARNINGS familias; el resto se cuenta, no se repite."""
+    families = [f"aviso de tipo {chr(ord('a') + index)}" for index in range(8)]
+
+    lines = warning_summary(families)
+
+    assert lines[:MAX_WARNINGS] == families[:MAX_WARNINGS]
+    assert lines[-1] == "… y 3 tipos de aviso más en _report/summary.json"
+
+
+def test_the_last_family_left_out_is_said_in_singular() -> None:
+    families = [f"aviso de tipo {chr(ord('a') + index)}" for index in range(MAX_WARNINGS + 1)]
+
+    assert warning_summary(families)[-1] == "… y 1 tipo de aviso más en _report/summary.json"
+
+
+def test_nothing_is_truncated_when_the_families_fit() -> None:
+    families = [f"aviso de tipo {chr(ord('a') + index)}" for index in range(MAX_WARNINGS)]
+
+    assert warning_summary(families) == families
+
+
+def test_the_actionable_warning_is_visible_with_many_projects(tmp_path: Path, out: Path) -> None:
+    """Caso exacto de la revisión: los avisos de docs sin contenido tapaban al huérfano."""
+    root = tmp_path / "export"
+    projects = root / "projects-000" / "projects"
+    projects.mkdir(parents=True)
+    for index in range(8):
+        uuid = f"{index}0000000-1111-4222-8333-444444444444"
+        (projects / f"{uuid}.json").write_text(
+            json.dumps(
+                {
+                    "uuid": uuid,
+                    "name": f"Proyecto {index}",
+                    "created_at": "2026-01-02T03:04:05.000000Z",
+                    "docs": [{"uuid": f"doc-{index}", "filename": f"notas-{index}.md"}],
+                }
+            ),
+            encoding="utf-8",
+        )
+    (root / "conversations-000").mkdir(parents=True)
+    (root / "conversations-000" / "conversations.json").write_text(
+        json.dumps(
+            [
+                {
+                    "uuid": "11111111-1111-4111-8111-111111111111",
+                    "name": "Huérfana",
+                    "created_at": "2026-01-02T10:00:00.000000Z",
+                    "project_uuid": "99999999-9999-4999-8999-999999999999",
+                    "chat_messages": [],
+                }
+            ]
+        ),
+        encoding="utf-8",
+    )
+
+    result = runner.invoke(app, ["convert", str(root), str(out)])
+    # rich parte las líneas largas: se comparan sin tener en cuenta dónde cortó.
+    message = " ".join(result.stderr.split())
+
+    assert result.exit_code == 0
+    assert "99999999-9999-4999-8999-999999999999" in message
+    assert "8 documentos de 8 proyectos" in message

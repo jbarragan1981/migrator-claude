@@ -66,6 +66,7 @@ from claude_export_md.rendering.filters import (
     short_hash,
     slugify,
 )
+from claude_export_md.rendering.links import ProjectLink, relative_link
 from claude_export_md.rendering.render import MARKDOWN_SUFFIX, build_environment
 
 #: Plantilla y `type` de frontmatter de una conversación.
@@ -373,9 +374,18 @@ def _parts(message: Message, collector: ArtifactCollector) -> list[dict[str, str
 
 
 def conversation_context(
-    conversation: Conversation, collector: ArtifactCollector
+    conversation: Conversation,
+    collector: ArtifactCollector,
+    project: ProjectLink | None = None,
+    path: str | None = None,
 ) -> dict[str, Any]:
-    """Variables que ve `conversation.md.j2` (documentadas en la propia plantilla)."""
+    """Variables que ve `conversation.md.j2` (documentadas en la propia plantilla).
+
+    `project` es el proyecto ya resuelto por `usecases/links.py` (spec 03, projects
+    CA-4) y `path`, la ruta de ESTE archivo, necesaria para calcular el enlace relativo
+    hasta el `project.md`. Sin proyecto resuelto solo queda el `project_id` crudo, que es
+    lo que trae el export.
+    """
     extra = dict(conversation.model_extra or {})
     source_file = extra.pop(SOURCE_FILE_KEY, None)
     turns = [
@@ -395,6 +405,14 @@ def conversation_context(
         "updated_at": iso_utc(conversation.updated_at),
         "source_file": source_file,
         "project_id": conversation.project_id,
+        "project_title": None if project is None else project.title,
+        "project_link": (
+            None
+            if project is None
+            else relative_link(
+                path if path is not None else conversation_output_path(conversation), project.path
+            )
+        ),
         # CA-4: `""` se emite; solo `None` (campo ausente) se omite.
         "summary": conversation.summary,
         "message_count": len(conversation.messages),
@@ -408,12 +426,14 @@ def render_conversation(
     conversation: Conversation,
     environment: Environment | None = None,
     path: str | None = None,
+    project: ProjectLink | None = None,
 ) -> RenderedConversation:
     """Markdown de la conversación más los artefactos que se le sacaron del cuerpo.
 
     `path` permite imponer la ruta que ya asignó un `ConversationPaths` (para que el
     `.md`, la carpeta de artefactos y la fila del `_index.md` digan lo mismo); si no se
-    pasa, se calcula la ruta natural de la conversación.
+    pasa, se calcula la ruta natural de la conversación. `project` es el proyecto al que
+    pertenece, ya resuelto por `usecases/links.py`.
     """
     env = environment if environment is not None else build_environment()
     if path is None:
@@ -422,7 +442,7 @@ def render_conversation(
     collector = ArtifactCollector(folder)
     # El contexto se arma antes de renderizar porque es al armarlo cuando se extraen
     # los artefactos: la plantilla ya recibe el cuerpo con los enlaces puestos.
-    context = conversation_context(conversation, collector)
+    context = conversation_context(conversation, collector, project, path)
     rendered = env.get_template(CONVERSATION_TEMPLATE).render(**context)
     parent = PurePosixPath(path).parent
     return RenderedConversation(

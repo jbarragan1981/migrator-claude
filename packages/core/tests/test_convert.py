@@ -2,7 +2,10 @@
 
 El fixture es el de `memories` más el de `conversations`, copiados a una misma raíz:
 así se ejercita lo que hará el usuario (un export con varias categorías) sin duplicar
-los datos sintéticos que ya viven en `fixtures/synthetic/`.
+los datos sintéticos que ya viven en `fixtures/synthetic/`. La última sección
+(`las cinco categorías`) le añade `projects`, `frames` y `light_metadata` para cubrir el
+árbol entero de CLAUDE.md §5 y el enlace conversación ↔ proyecto (spec 03, projects
+CA-4).
 """
 
 from __future__ import annotations
@@ -107,10 +110,10 @@ def test_the_result_counts_what_it_converted(result: ConvertResult, out: Path) -
     assert set(result.files) == set(tree(out))
 
 
-def test_m1_does_not_invent_the_categories_that_still_have_no_parser(
+def test_a_category_the_export_does_not_bring_does_not_create_an_empty_folder(
     result: ConvertResult, out: Path
 ) -> None:
-    """`projects/`, `frames/` y `account/` llegan en M2: no se crean vacías."""
+    """Este export solo trae memorias y conversaciones: nada de `projects/` vacío."""
     assert not (out / "projects").exists()
     assert not (out / "frames").exists()
     assert not (out / "account").exists()
@@ -508,3 +511,359 @@ def test_the_collision_is_resolved_the_same_way_on_every_run(
     convert(FolderSource(twins_export), FilesystemSink(second))
 
     assert tree(first) == tree(second)
+
+
+# ============================================== las cinco categorías (CLAUDE.md §5)
+
+#: El proyecto al que apunta `b2b2b2b2…` en el fixture de conversaciones.
+PROJECT = "ffffffff-0000-4000-8000-000000000001"
+#: Un proyecto que ninguna conversación referencia.
+EMPTY_PROJECT = "ffffffff-0000-4000-8000-000000000002"
+#: Un `project_uuid` que NO está en el export (conversación huérfana).
+MISSING_PROJECT = "00000000-dead-4000-8000-000000000000"
+FRAME = "f1f1f1f1-1111-4222-8333-444444444444"
+ACCOUNT = "aaaaaaaa-bbbb-4ccc-8ddd-eeeeeeeeeeee"
+
+#: Ruta de la conversación del proyecto (2026-02-03T08:05+02:00 → 06:05 UTC) y del
+#: `project.md` al que tiene que enlazar.
+PROJECT_CONVERSATION = "conversations/2026/02/2026-02-03_sin-titulo_b2b2b2b2.md"
+PROJECT_FILE = "projects/cocina-casera/project.md"
+ORPHAN_CONVERSATION = "conversations/2026/04/2026-04-01_charla-huerfana_e5e5e5e5.md"
+
+
+def write_json(path: Path, payload: object) -> None:
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text(json.dumps(payload, ensure_ascii=False), encoding="utf-8")
+
+
+@pytest.fixture
+def full_export(fixtures_dir: Path, tmp_path: Path) -> Path:
+    """Export sintético con las CINCO categorías y el enlace conversación ↔ proyecto."""
+    root = tmp_path / "export completo"
+    root.mkdir()
+    shutil.copytree(fixtures_dir / "memories-batched" / "memories-000", root / "memories-000")
+    shutil.copytree(
+        fixtures_dir / "conversations-batched" / "conversations-000", root / "conversations-000"
+    )
+    # Segunda parte de conversaciones: una que apunta a un proyecto que no existe.
+    write_json(
+        root / "conversations-001" / "conversations.json",
+        [
+            {
+                "uuid": "e5e5e5e5-5555-4000-8000-000000000005",
+                "name": "Charla huérfana",
+                "created_at": "2026-04-01T10:00:00.000000Z",
+                "project_uuid": MISSING_PROJECT,
+                "chat_messages": [{"uuid": "m1", "sender": "human", "text": "hola"}],
+            }
+        ],
+    )
+    write_json(
+        root / "projects-000" / "projects" / f"{PROJECT}.json",
+        {
+            "uuid": PROJECT,
+            "name": "Cocina casera",
+            "description": "Recetas de la abuela.",
+            "prompt_template": "Responde siempre en español.",
+            "created_at": "2026-01-01T00:00:00.000000Z",
+            "updated_at": "2026-01-04T00:00:00.000000Z",
+            "docs": [
+                {
+                    "uuid": "d0c0d0c0-1111-4222-8333-444444444444",
+                    "filename": "notas.md",
+                    "created_at": "2026-01-01T01:00:00.000000Z",
+                }
+            ],
+        },
+    )
+    write_json(
+        root / "projects-000" / "projects" / f"{EMPTY_PROJECT}.json",
+        {
+            "uuid": EMPTY_PROJECT,
+            "name": "Proyecto vacío",
+            "created_at": "2026-01-05T00:00:00.000000Z",
+            "docs": [],
+        },
+    )
+    write_json(
+        root / "frames-000" / "artifacts" / FRAME / f"{FRAME}.json",
+        {
+            "id": FRAME,
+            "kind": "document",
+            "visibility": "private",
+            "updated_at": "2026-02-03T04:05:06.000000Z",
+            "active_version": "ver_0001",
+            "versions": [
+                {
+                    "id": "ver_0001",
+                    "title": "Informe de ventas Q3",
+                    "created_at": "2026-01-02T03:04:05.000000Z",
+                }
+            ],
+        },
+    )
+    write_json(
+        root / "light_metadata-000" / "light_metadata.json",
+        [{"uuid": ACCOUNT, "email_address": "persona@example.com", "full_name": "Persona Ñandú"}],
+    )
+    write_manifest(
+        root,
+        {
+            "conversations": [0, 1],
+            "memories": [0],
+            "projects": [0],
+            "frames": [0],
+            "light_metadata": [0],
+        },
+        created_at=EXPORT_CREATED_AT,
+    )
+    return root
+
+
+@pytest.fixture
+def full(full_export: Path, out: Path) -> ConvertResult:
+    return convert(FolderSource(full_export), FilesystemSink(out))
+
+
+def test_the_five_categories_fill_the_tree_of_claude_md_5(full: ConvertResult, out: Path) -> None:
+    written = set(tree(out))
+
+    assert {
+        "account/account.md",
+        PROJECT_FILE,
+        "projects/cocina-casera/docs/notas.md",
+        "projects/proyecto-vacio/project.md",
+        "frames/informe-de-ventas-q3.md",
+        "memories/profile.md",
+        PROJECT_CONVERSATION,
+    } <= written
+    assert set(full.files) == written
+
+
+def test_the_summary_counts_the_five_categories(full: ConvertResult, out: Path) -> None:
+    summary = json.loads(read(out / "_report" / "summary.json"))
+
+    assert summary["categories"] == {
+        "conversations": 5,
+        "frames": 1,
+        "light_metadata": 1,
+        "memories": 6,
+        "projects": 2,
+    }
+    assert set(summary["converted_categories"]) == set(summary["categories"])
+
+
+def test_an_export_with_two_accounts_keeps_both_and_says_so(full_export: Path, out: Path) -> None:
+    """Ninguna se queda la ruta fija `account/account.md` (spec 04, `account.md.j2`)."""
+    write_json(
+        full_export / "light_metadata-000" / "light_metadata.json",
+        [
+            {"uuid": ACCOUNT, "full_name": "Persona Ñandú"},
+            {"uuid": "aaaaaaaa-bbbb-4ccc-8ddd-eeeeeeeeeeef", "full_name": "Otra persona"},
+        ],
+    )
+
+    result = convert(FolderSource(full_export), FilesystemSink(out))
+    accounts = [path for path in tree(out) if path.startswith("account/")]
+
+    assert len(accounts) == 2
+    assert "account/account.md" not in accounts
+    assert any("cuentas" in warning for warning in result.report.warnings)
+
+
+def test_the_account_file_is_the_profile_of_the_export(full: ConvertResult, out: Path) -> None:
+    account = read(out / "account" / "account.md")
+
+    assert "Persona Ñandú" in account
+    assert "persona@example.com" in account
+
+
+# ------------------------------------------- CA-4 enlace conversación ↔ proyecto
+
+
+def test_a_conversation_shows_the_name_of_its_project_not_the_raw_uuid(
+    full: ConvertResult, out: Path
+) -> None:
+    """Spec 03, projects CA-4: resuelto el proyecto, se ve su NOMBRE."""
+    markdown = read(out / PROJECT_CONVERSATION)
+
+    assert "Cocina casera" in markdown
+    # El uuid sigue en el frontmatter: no se pierde el dato del export.
+    assert PROJECT in markdown
+
+
+def test_the_link_from_a_conversation_to_its_project_is_relative_and_resolves(
+    full: ConvertResult, out: Path
+) -> None:
+    markdown = read(out / PROJECT_CONVERSATION)
+
+    assert "../../../projects/cocina-casera/project.md" in markdown
+    assert (
+        (out / PROJECT_CONVERSATION)
+        .parent.joinpath("../../../projects/cocina-casera/project.md")
+        .resolve()
+        .is_file()
+    )
+
+
+def test_the_project_lists_its_conversations_with_a_relative_link(
+    full: ConvertResult, out: Path
+) -> None:
+    project = read(out / PROJECT_FILE)
+
+    assert "../../conversations/2026/02/2026-02-03_sin-titulo_b2b2b2b2.md" in project
+    assert "Ninguna conversación" not in project
+
+
+def test_a_project_nobody_points_at_says_so_instead_of_leaving_the_section_empty(
+    full: ConvertResult, out: Path
+) -> None:
+    assert "Ninguna conversación" in read(out / "projects" / "proyecto-vacio" / "project.md")
+
+
+def test_the_index_shows_the_project_name_with_a_link(full: ConvertResult, out: Path) -> None:
+    """Spec 04 CA-7: la columna Proyecto deja de ser un uuid crudo cuando resuelve."""
+    row = next(
+        line for line in read(out / "_index.md").splitlines() if PROJECT_CONVERSATION in line
+    )
+
+    assert f"[Cocina casera]({PROJECT_FILE})" in row
+    assert PROJECT not in row
+
+
+def test_the_memory_of_a_project_also_names_it_in_the_index(full: ConvertResult, out: Path) -> None:
+    """Las memorias de proyecto (ADR-0005) se cruzan igual que las conversaciones."""
+    row = next(
+        line
+        for line in read(out / "_index.md").splitlines()
+        if f"](memories/project-memories/{PROJECT}.md)" in line
+    )
+
+    assert f"[Cocina casera]({PROJECT_FILE})" in row
+
+
+def test_a_conversation_whose_project_is_not_in_the_export_keeps_the_raw_uuid(
+    full: ConvertResult, out: Path
+) -> None:
+    """Si no resuelve no se rompe nada ni se inventa un enlace: se ve el uuid."""
+    row = next(line for line in read(out / "_index.md").splitlines() if ORPHAN_CONVERSATION in line)
+
+    assert MISSING_PROJECT in row
+    assert "](projects/" not in row
+    assert (out / ORPHAN_CONVERSATION).is_file()
+
+
+def test_an_orphan_conversation_leaves_a_warning_in_the_report(
+    full: ConvertResult, out: Path
+) -> None:
+    summary = json.loads(read(out / "_report" / "summary.json"))
+    orphans = [warning for warning in summary["warnings"] if MISSING_PROJECT in warning]
+
+    assert len(orphans) == 1
+
+
+# --------------------------------------- lo que los parsers ya advertían (M2)
+
+
+def test_the_content_unavailable_warnings_reach_the_report_of_the_run(
+    full: ConvertResult, out: Path
+) -> None:
+    """Los avisos de `projects.docs[]` y de `frames` no se pierden por el camino.
+
+    Desde la revisión de M2 son UNA línea agregada por categoría, no una por ítem: el
+    nombre de cada documento y de cada artefacto vive en su propio `.md` (el test de
+    abajo) y en `_report/summary.json`, no repetido en el resumen del CLI.
+    """
+    warnings = "\n".join(full.report.warnings)
+
+    assert "1 documento de 1 proyecto llega solo con su metadata" in warnings
+    assert "1 artefacto llega solo con su metadata" in warnings
+    assert json.loads(read(out / "_report" / "summary.json"))["warning_count"] == len(
+        full.report.warnings
+    )
+
+
+def test_the_doc_and_the_frame_say_that_the_export_has_no_content(
+    full: ConvertResult, out: Path
+) -> None:
+    assert "no incluye el contenido" in read(
+        out / "projects" / "cocina-casera" / "docs" / "notas.md"
+    )
+    assert "no incluye el contenido" in read(out / "frames" / "informe-de-ventas-q3.md")
+
+
+# ------------------------------------------------------ índice, README, determinismo
+
+
+def test_the_index_has_a_section_for_each_category(full: ConvertResult, out: Path) -> None:
+    index = read(out / "_index.md")
+
+    assert "## Conversaciones" in index
+    assert "## Proyectos" in index
+    assert "## Memorias" in index
+    assert "## Artefactos" in index
+    assert "## Cuenta" in index
+
+
+def test_the_index_project_row_counts_its_conversations_and_docs(
+    full: ConvertResult, out: Path
+) -> None:
+    row = next(
+        line
+        for line in read(out / "_index.md").splitlines()
+        # La fila del proyecto, no la de la conversación que también lo enlaza.
+        if PROJECT_FILE in line and "](conversations/" not in line
+    )
+    cells = [cell.strip() for cell in row.split("|")[1:-1]]
+
+    assert "Cocina casera" in cells[1]
+    assert cells[2] == "1"  # una conversación apunta al proyecto
+    assert cells[3] == "1"  # un documento
+
+
+def test_every_link_of_the_index_resolves(full: ConvertResult, out: Path) -> None:
+    links = [
+        part.split(")")[0]
+        for line in read(out / "_index.md").splitlines()
+        for part in line.split("](")[1:]
+    ]
+
+    assert links
+    for link in links:
+        assert (out / link).is_file()
+
+
+def test_the_readme_no_longer_promises_the_categories_that_already_exist(
+    full: ConvertResult, out: Path
+) -> None:
+    readme = read(out / "README.md")
+
+    assert "se añadirán más adelante" not in readme
+    assert "projects/" in readme
+    assert "frames/" in readme
+    assert "account/" in readme
+
+
+def test_two_runs_of_the_five_categories_produce_the_same_bytes(
+    full_export: Path, tmp_path: Path
+) -> None:
+    first, second = tmp_path / "a", tmp_path / "b"
+
+    convert(FolderSource(full_export), FilesystemSink(first))
+    convert(FolderSource(full_export), FilesystemSink(second))
+
+    assert tree(first) == tree(second)
+
+
+def test_progress_reports_the_five_categories(full_export: Path, out: Path) -> None:
+    seen: list[tuple[str, int]] = []
+
+    convert(
+        FolderSource(full_export),
+        FilesystemSink(out),
+        progress=lambda category, done: seen.append((category, done)),
+    )
+
+    assert {"memories", "conversations", "projects", "frames", "light_metadata"} <= {
+        category for category, _done in seen
+    }
