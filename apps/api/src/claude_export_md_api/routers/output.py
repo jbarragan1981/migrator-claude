@@ -13,13 +13,18 @@ from fastapi import APIRouter, Query
 from fastapi.responses import FileResponse
 
 from claude_export_md_api.schemas.output import OutputTreeEntry, OutputTreeResponse
+from claude_export_md_api.schemas.problem import problem_responses
 from claude_export_md_api.services import output as output_service
 from claude_export_md_api.services.output import TempZipResponse
 
 router = APIRouter(tags=["output"])
 
 
-@router.get("/exports/{export_id}/output/tree", response_model=OutputTreeResponse)
+@router.get(
+    "/exports/{export_id}/output/tree",
+    response_model=OutputTreeResponse,
+    responses=problem_responses(404),
+)
 async def get_output_tree(export_id: str) -> OutputTreeResponse:
     entries = output_service.list_tree(export_id)
     return OutputTreeResponse(
@@ -27,14 +32,36 @@ async def get_output_tree(export_id: str) -> OutputTreeResponse:
     )
 
 
-@router.get("/exports/{export_id}/output/file")
+#: `guess_media_type` decide el content-type real por extension en tiempo de request
+#: (puede ser cualquier archivo del arbol: .md, .py, .json...); `octet-stream` binario
+#: es la declaracion mas honesta que se puede dar en el openapi.json sin fijar un tipo
+#: unico que seria falso para la mayoria de los archivos.
+_FILE_RESPONSE = {
+    "description": "Contenido crudo del archivo (content-type real: guess_media_type).",
+    "content": {"application/octet-stream": {"schema": {"type": "string", "format": "binary"}}},
+}
+
+
+@router.get(
+    "/exports/{export_id}/output/file",
+    responses={200: _FILE_RESPONSE, **problem_responses(400, 404, 422)},
+)
 async def get_output_file(export_id: str, path: str = Query(...)) -> FileResponse:
     resolved = output_service.resolve_output_file(export_id, path)
     media_type = output_service.guess_media_type(resolved)
     return FileResponse(resolved, media_type=media_type, filename=resolved.name)
 
 
-@router.get("/exports/{export_id}/download")
+@router.get(
+    "/exports/{export_id}/download",
+    responses={
+        200: {
+            "description": "El arbol convertido completo, en zip.",
+            "content": {"application/zip": {"schema": {"type": "string", "format": "binary"}}},
+        },
+        **problem_responses(404),
+    },
+)
 async def download_export(export_id: str) -> FileResponse:
     # Se resuelve ANTES de armar el zip: un 404 lanzado DESPUES de haber pasado minutos
     # comprimiendo un arbol grande seria un desperdicio, y ademas rompe el mismo

@@ -15,13 +15,45 @@ from pydantic import ValidationError
 from claude_export_md import Inventory
 from claude_export_md_api.errors import ProblemError
 from claude_export_md_api.schemas.exports import ExportCreateResponse, LocalExportRequest
+from claude_export_md_api.schemas.problem import problem_responses
 from claude_export_md_api.services import exports as exports_service
 from claude_export_md_api.services import lifecycle as lifecycle_service
 
 router = APIRouter(tags=["exports"])
 
+#: `create_export` lee el body "a mano" (ver docstring), asi que FastAPI no puede
+#: inferir el requestBody de un parametro tipado - sin esto el openapi.json documenta
+#: el endpoint sin ningun body, y el cliente generado en M4 no podria mandar ni la
+#: ruta local ni los archivos. Los dos modos son mutuamente excluyentes por
+#: content-type (multipart vs JSON), de ahi el `oneOf`.
+_CREATE_EXPORT_REQUEST_BODY = {
+    "required": True,
+    "content": {
+        "multipart/form-data": {
+            "schema": {
+                "type": "object",
+                "properties": {
+                    "file": {
+                        "type": "array",
+                        "items": {"type": "string", "format": "binary"},
+                        "description": "Uno o mas zips y/o el member-manifest-*.json.",
+                    }
+                },
+                "required": ["file"],
+            }
+        },
+        "application/json": {"schema": LocalExportRequest.model_json_schema()},
+    },
+}
 
-@router.post("/exports", status_code=201, response_model=ExportCreateResponse)
+
+@router.post(
+    "/exports",
+    status_code=201,
+    response_model=ExportCreateResponse,
+    responses=problem_responses(400, 403, 413),
+    openapi_extra={"requestBody": _CREATE_EXPORT_REQUEST_BODY},
+)
 async def create_export(request: Request) -> ExportCreateResponse:
     """Multipart -> subida; cualquier otro content-type -> se interpreta como `{"path"}`.
 
@@ -53,12 +85,20 @@ async def create_export(request: Request) -> ExportCreateResponse:
     return ExportCreateResponse(export_id=export_id)
 
 
-@router.get("/exports/{export_id}/inventory", response_model=Inventory)
+@router.get(
+    "/exports/{export_id}/inventory",
+    response_model=Inventory,
+    responses=problem_responses(404, 422),
+)
 async def get_export_inventory(export_id: str) -> Inventory:
     return exports_service.inventory_for(export_id)
 
 
-@router.delete("/exports/{export_id}", status_code=204)
+@router.delete(
+    "/exports/{export_id}",
+    status_code=204,
+    responses=problem_responses(404, 409),
+)
 async def delete_export(export_id: str) -> Response:
     """Ver decisiones en `services/lifecycle.py::delete_export` (id inexistente -> 404,
     modo local solo borra `_output/`, modo subida borra el directorio de trabajo entero)."""

@@ -15,12 +15,18 @@ from claude_export_md_api.schemas.jobs import (
     JobStatusResponse,
     ProgressEventSchema,
 )
+from claude_export_md_api.schemas.problem import problem_responses
 from claude_export_md_api.services import jobs as jobs_service
 
 router = APIRouter(tags=["jobs"])
 
 
-@router.post("/exports/{export_id}/convert", status_code=202, response_model=JobCreateResponse)
+@router.post(
+    "/exports/{export_id}/convert",
+    status_code=202,
+    response_model=JobCreateResponse,
+    responses=problem_responses(404, 409),
+)
 async def convert_export(export_id: str, body: ConvertRequest | None = None) -> JobCreateResponse:
     payload = body or ConvertRequest()
     job_id = jobs_service.start_conversion(
@@ -29,7 +35,7 @@ async def convert_export(export_id: str, body: ConvertRequest | None = None) -> 
     return JobCreateResponse(job_id=job_id)
 
 
-@router.get("/jobs/{job_id}", response_model=JobStatusResponse)
+@router.get("/jobs/{job_id}", response_model=JobStatusResponse, responses=problem_responses(404))
 async def get_job(job_id: str) -> JobStatusResponse:
     view = jobs_service.job_status(job_id)
     return JobStatusResponse(
@@ -42,7 +48,16 @@ async def get_job(job_id: str) -> JobStatusResponse:
     )
 
 
-@router.get("/jobs/{job_id}/events")
+@router.get(
+    "/jobs/{job_id}/events",
+    responses={
+        200: {
+            "description": "progress/done/error, uno por linea 'data: ...' (spec 06 CA-3).",
+            "content": {"text/event-stream": {"schema": {"type": "string"}}},
+        },
+        **problem_responses(404),
+    },
+)
 async def get_job_events(job_id: str, request: Request) -> StreamingResponse:
     # Se chequea ANTES de crear el StreamingResponse: un 404 lanzado desde dentro del
     # generador llega tarde, con la respuesta ya empezada (ver services/jobs.py).
