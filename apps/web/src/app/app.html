@@ -1,0 +1,28 @@
+<mat-toolbar color="primary" class="flex flex-wrap items-center gap-2 !h-auto py-2">
+  <span class="font-medium">{{ 'app.title' | transloco }}</span>
+  <nav class="flex flex-wrap gap-1 ml-0 sm:ml-4" aria-label="Navegación principal">
+    <a
+      mat-button
+      routerLink="/"
+      routerLinkActive="!bg-black/10"
+      [routerLinkActiveOptions]="{ exact: true }"
+      >{{ 'nav.upload' | transloco }}</a
+    >
+    <a mat-button routerLink="/inventory" routerLinkActive="!bg-black/10">{{
+      'nav.inventory' | transloco
+    }}</a>
+    <a mat-button routerLink="/convert" routerLinkActive="!bg-black/10">{{
+      'nav.convert' | transloco
+    }}</a>
+    <a mat-button routerLink="/result" routerLinkActive="!bg-black/10">{{
+      'nav.result' | transloco
+    }}</a>
+    <a mat-button routerLink="/settings" routerLinkActive="!bg-black/10">{{
+      'nav.settings' | transloco
+    }}</a>
+  </nav>
+</mat-toolbar>
+
+<main>
+  <router-outlet />
+</main>

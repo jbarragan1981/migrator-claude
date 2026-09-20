@@ -1,0 +1,22 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>ClaudeExportMdWeb</title>
+    <base href="/" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="icon" type="image/x-icon" href="favicon.ico" />
+    <!--
+      CLAUDE.md #5: "nada sale de la máquina del usuario, no hay llamadas a Internet".
+      `ng add @angular/material` agrega por defecto <link> a fonts.googleapis.com para
+      Roboto y Material Icons; se quitan a propósito para que la app funcione 100% offline
+      (docker compose sin salida a Internet). Material usa la fuente del sistema como
+      fallback (`font: var(--mat-sys-body-medium)` en styles.scss ya incluye una pila
+      sans-serif); si una pantalla futura necesita iconos, usar `mat-icon` con SVGs
+      registrados localmente en vez de la fuente de ligaduras de Google.
+    -->
+  </head>
+  <body>
+    <app-root></app-root>
+  </body>
+</html>

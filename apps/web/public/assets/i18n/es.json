@@ -1,0 +1,17 @@
+{
+  "app": {
+    "title": "claude-export-md"
+  },
+  "nav": {
+    "upload": "Inicio",
+    "inventory": "Inventario",
+    "convert": "Conversión",
+    "result": "Resultado",
+    "settings": "Ajustes"
+  },
+  "common": {
+    "underConstruction": "Esta pantalla todavía no está implementada.",
+    "retry": "Reintentar",
+    "loading": "Cargando…"
+  }
+}

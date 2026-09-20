@@ -18,7 +18,7 @@ convert DIR OUT:
 
 test:
     uv run pytest packages/core apps/cli apps/api -q --cov=claude_export_md --cov-fail-under=85
-    pnpm -C apps/web test '--' --watch=false
+    pnpm -C apps/web exec ng test --watch=false
 
 lint:
     uv run ruff check .
@@ -36,4 +36,14 @@ up:
     docker compose up --build
 
 gen-client:
-    pnpm -C apps/web exec openapi-typescript-codegen --input http://localhost:8000/openapi.json --output src/app/core/api --client angular
+    # Dos ajustes sobre el comando "de libro" (necesita la API corriendo, `just api`):
+    # 1. El paquete se llama `openapi-typescript-codegen` pero el binario que instala
+    #    (ver su package.json -> "bin") se llama `openapi`, no el nombre del paquete.
+    # 2. openapi-typescript-codegen@0.31 resuelve $refs con una version de
+    #    json-schema-ref-parser que ya no acepta una URL http(s) como --input
+    #    directo (falla con "Unable to resolve $ref pointer" antes de leer nada,
+    #    confirmado con curl/fetch funcionando bien contra la misma URL): se baja
+    #    el openapi.json a un archivo temporal primero y se le apunta a ESE archivo.
+    node -e "fetch('http://localhost:8000/openapi.json').then(r=>r.text()).then(t=>require('fs').writeFileSync('apps/web/.openapi-gen-client.json', t))"
+    pnpm -C apps/web exec openapi --input .openapi-gen-client.json --output src/app/core/api --client angular
+    node -e "require('fs').rmSync('apps/web/.openapi-gen-client.json')"
