@@ -1,0 +1,24 @@
+# Nunca al build context: datos reales del usuario ni artefactos locales.
+# exports/ y output/ solo pueden existir en la raiz del repo (son las carpetas que
+# usa el usuario localmente via CLI, CLAUDE.md 3/6): sin '**/', el resto de patrones
+# solo matcheaba en la RAIZ del build context y dejaba pasar copias anidadas (p. ej.
+# __pycache__ de packages/core/src/**, confirmado por el reviewer en la imagen real).
+exports/
+output/
+**/*.zip
+**/member-manifest-*.json
+.env
+.env.*
+**/.venv/
+**/__pycache__/
+**/*.pyc
+**/.mypy_cache/
+**/.ruff_cache/
+**/.pytest_cache/
+**/.coverage
+**/htmlcov/
+.git/
+**/node_modules/
+apps/web/.angular/
+apps/web/dist/
+docs/export-format/inventory.json
