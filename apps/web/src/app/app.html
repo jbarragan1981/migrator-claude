@@ -1,26 +1,52 @@
 <mat-toolbar color="primary" class="flex flex-wrap items-center gap-2 !h-auto py-2">
-  <span class="font-medium">{{ 'app.title' | transloco }}</span>
-  <nav class="flex flex-wrap gap-1 ml-0 sm:ml-4" aria-label="Navegación principal">
+  <span class="font-display font-medium">{{ 'app.title' | transloco }}</span>
+  <nav class="flex flex-wrap items-center gap-1 ml-0 sm:ml-4" aria-label="Navegación principal">
     <a
       mat-button
       routerLink="/"
-      routerLinkActive="!bg-black/10"
+      routerLinkActive="!bg-moss-container !text-ink"
       [routerLinkActiveOptions]="{ exact: true }"
       >{{ 'nav.upload' | transloco }}</a
     >
-    <a mat-button routerLink="/inventory" routerLinkActive="!bg-black/10">{{
-      'nav.inventory' | transloco
-    }}</a>
-    <a mat-button routerLink="/convert" routerLinkActive="!bg-black/10">{{
-      'nav.convert' | transloco
-    }}</a>
-    <a mat-button routerLink="/result" routerLinkActive="!bg-black/10">{{
-      'nav.result' | transloco
-    }}</a>
-    <a mat-button routerLink="/settings" routerLinkActive="!bg-black/10">{{
+    <!-- Inventario/Conversión/Resultado necesitan un exportId (path o query param
+         según la ruta): con uno activo enlazan directo a ese export; sin uno,
+         quedan deshabilitados en vez de llevar a una pantalla vacía (antes de
+         CurrentExportService estos links no llevaban ningún id). -->
+    @if (exportId(); as id) {
+      <a mat-button [routerLink]="['/inventory', id]" routerLinkActive="!bg-moss-container !text-ink">{{
+        'nav.inventory' | transloco
+      }}</a>
+      <a
+        mat-button
+        routerLink="/convert"
+        [queryParams]="{ exportId: id }"
+        routerLinkActive="!bg-moss-container !text-ink"
+        >{{ 'nav.convert' | transloco }}</a
+      >
+      <a mat-button [routerLink]="['/result', id]" routerLinkActive="!bg-moss-container !text-ink">{{
+        'nav.result' | transloco
+      }}</a>
+    } @else {
+      <button mat-button disabled type="button" [attr.title]="'nav.needsExport' | transloco">
+        {{ 'nav.inventory' | transloco }}
+      </button>
+      <button mat-button disabled type="button" [attr.title]="'nav.needsExport' | transloco">
+        {{ 'nav.convert' | transloco }}
+      </button>
+      <button mat-button disabled type="button" [attr.title]="'nav.needsExport' | transloco">
+        {{ 'nav.result' | transloco }}
+      </button>
+    }
+    <a mat-button routerLink="/settings" routerLinkActive="!bg-moss-container !text-ink">{{
       'nav.settings' | transloco
     }}</a>
   </nav>
+  @if (exportId(); as id) {
+    <span class="ml-0 sm:ml-auto flex items-center gap-2 text-xs opacity-90">
+      {{ 'nav.activeExport' | transloco: { id: exportIdShort() } }}
+      <button mat-button type="button" (click)="startOver()">{{ 'nav.startOver' | transloco }}</button>
+    </span>
+  }
 </mat-toolbar>
 
 <main>

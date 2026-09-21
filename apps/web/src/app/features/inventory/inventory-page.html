@@ -1,0 +1,162 @@
+<div class="m-4 flex max-w-4xl flex-col gap-4">
+  <h1 class="text-xl font-display font-medium">{{ 'inventory.title' | transloco }}</h1>
+
+  @switch (status()) {
+    @case ('loading') {
+      <mat-card>
+        <mat-card-content class="flex items-center gap-3 p-2">
+          <mat-progress-spinner diameter="24" mode="indeterminate" />
+          <span>{{ 'common.loading' | transloco }}</span>
+        </mat-card-content>
+      </mat-card>
+    }
+    @case ('error') {
+      <mat-card class="border-l-4 border-brick" role="alert">
+        <mat-card-content class="flex flex-col gap-2">
+          <p class="text-brick">{{ (errorKey() ?? 'inventory.errors.generic') | transloco }}</p>
+          <div>
+            <button mat-flat-button color="primary" type="button" (click)="reload()">
+              {{ 'common.retry' | transloco }}
+            </button>
+          </div>
+        </mat-card-content>
+      </mat-card>
+    }
+    @case ('success') {
+      @if (inventory(); as inventory) {
+        @let formatKey = 'inventory.summary.format.' + inventory.format_version;
+        <p class="text-sm opacity-70">
+          {{ 'inventory.summary.root' | transloco: { root: inventory.root } }} —
+          {{ formatKey | transloco }}
+        </p>
+
+        @if (hasIssues()) {
+          <mat-card class="border-l-4 border-ochre" role="alert">
+            <mat-card-header>
+              <mat-card-title class="text-base">{{ 'inventory.warnings.title' | transloco }}</mat-card-title>
+            </mat-card-header>
+            <mat-card-content class="flex flex-col gap-2 text-sm">
+              @if (inventory.missing_categories.length > 0) {
+                <p>
+                  {{ 'inventory.warnings.missingCategories' | transloco }}:
+                  {{ inventory.missing_categories.join(', ') }}
+                </p>
+              }
+              @if (inventory.missing_parts | keyvalue; as missingPartsEntries) {
+                @if (missingPartsEntries.length > 0) {
+                  <ul class="list-disc pl-5">
+                    @for (entry of missingPartsEntries; track entry.key) {
+                      <li>
+                        {{
+                          'inventory.warnings.missingParts'
+                            | transloco: { category: entry.key, parts: entry.value.join(', ') }
+                        }}
+                      </li>
+                    }
+                  </ul>
+                }
+              }
+              @if (inventory.warnings.length > 0) {
+                <ul class="list-disc pl-5">
+                  @for (warning of inventory.warnings; track warning) {
+                    <li>{{ warning }}</li>
+                  }
+                </ul>
+              }
+            </mat-card-content>
+          </mat-card>
+        }
+
+        <!-- Vista de tarjetas para pantallas angostas (CA-5: usable a 360px sin scroll horizontal) -->
+        <div class="flex flex-col gap-2 sm:hidden">
+          @for (row of rows(); track row.name) {
+            <mat-card>
+              <mat-card-content class="flex items-center justify-between gap-3">
+                <div class="min-w-0">
+                  <p class="truncate font-medium">{{ row.name }}</p>
+                  <p class="text-sm opacity-70">
+                    {{ 'inventory.table.files' | transloco }}: {{ row.fileCount }} ·
+                    {{ row.totalBytes | bytesSize }}
+                  </p>
+                  <p class="text-sm opacity-70">
+                    {{ 'inventory.table.items' | transloco }}:
+                    {{ row.approxItemCount === null ? '—' : row.approxItemCount }}
+                  </p>
+                </div>
+                <span
+                  class="shrink-0"
+                  [attr.aria-label]="(row.hasWarning ? 'inventory.status.warning' : 'inventory.status.ok') | transloco"
+                >
+                  @if (row.hasWarning) {
+                    <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" class="text-ochre" aria-hidden="true">
+                      <path d="M12 4l9 16H3z" />
+                      <path d="M12 10v4" />
+                      <path d="M12 17.5h.01" />
+                    </svg>
+                  } @else {
+                    <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" class="text-moss" aria-hidden="true">
+                      <path d="M4 12.5l5 5L20 6.5" />
+                    </svg>
+                  }
+                </span>
+              </mat-card-content>
+            </mat-card>
+          }
+        </div>
+
+        <!-- Tabla para pantallas ≥ 640px -->
+        <table mat-table [dataSource]="rows()" class="hidden w-full sm:table">
+          <ng-container matColumnDef="name">
+            <th mat-header-cell *matHeaderCellDef>{{ 'inventory.table.category' | transloco }}</th>
+            <td mat-cell *matCellDef="let row">{{ row.name }}</td>
+          </ng-container>
+
+          <ng-container matColumnDef="files">
+            <th mat-header-cell *matHeaderCellDef>{{ 'inventory.table.files' | transloco }}</th>
+            <td mat-cell *matCellDef="let row">{{ row.fileCount }}</td>
+          </ng-container>
+
+          <ng-container matColumnDef="size">
+            <th mat-header-cell *matHeaderCellDef>{{ 'inventory.table.size' | transloco }}</th>
+            <td mat-cell *matCellDef="let row">{{ row.totalBytes | bytesSize }}</td>
+          </ng-container>
+
+          <ng-container matColumnDef="items">
+            <th mat-header-cell *matHeaderCellDef>{{ 'inventory.table.items' | transloco }}</th>
+            <td mat-cell *matCellDef="let row">{{ row.approxItemCount === null ? '—' : row.approxItemCount }}</td>
+          </ng-container>
+
+          <ng-container matColumnDef="status">
+            <th mat-header-cell *matHeaderCellDef>{{ 'inventory.table.status' | transloco }}</th>
+            <td mat-cell *matCellDef="let row">
+              <span
+                [attr.aria-label]="(row.hasWarning ? 'inventory.status.warning' : 'inventory.status.ok') | transloco"
+              >
+                @if (row.hasWarning) {
+                  <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" class="text-ochre" aria-hidden="true">
+                    <path d="M12 4l9 16H3z" />
+                    <path d="M12 10v4" />
+                    <path d="M12 17.5h.01" />
+                  </svg>
+                } @else {
+                  <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" class="text-moss" aria-hidden="true">
+                    <path d="M4 12.5l5 5L20 6.5" />
+                  </svg>
+                }
+              </span>
+            </td>
+          </ng-container>
+
+          <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+          <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+        </table>
+
+        <div>
+          <button mat-flat-button color="primary" type="button" [routerLink]="['/convert']" [queryParams]="{ exportId: exportId() }">
+            {{ 'inventory.actions.continue' | transloco }}
+          </button>
+        </div>
+      }
+    }
+  }
+</div>

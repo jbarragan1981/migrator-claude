@@ -1,7 +1,7 @@
 import { provideHttpClient } from '@angular/common/http';
 import { ApplicationConfig, isDevMode, provideBrowserGlobalErrorListeners } from '@angular/core';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
-import { provideRouter } from '@angular/router';
+import { provideRouter, withComponentInputBinding } from '@angular/router';
 import { provideTransloco } from '@jsverse/transloco';
 
 import { routes } from './app.routes';
@@ -10,7 +10,10 @@ import { TranslocoHttpLoader } from './core/i18n/transloco-http-loader';
 export const appConfig: ApplicationConfig = {
   providers: [
     provideBrowserGlobalErrorListeners(),
-    provideRouter(routes),
+    // `withComponentInputBinding()`: los parámetros de ruta (p. ej. `:exportId`)
+    // llegan como `input()` de signal al componente en vez de leerse a mano de
+    // `ActivatedRoute` (features/inventory usa `exportId = input.required<string>()`).
+    provideRouter(routes, withComponentInputBinding()),
     provideHttpClient(),
     // Ripple/overlay de Angular Material necesitan el motor de animaciones; la variante
     // "Async" lo carga en un chunk aparte para no sumarlo al bundle inicial (CA-6).

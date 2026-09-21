@@ -8,6 +8,11 @@
 // las `@tailwind` de abajo (Sass: "@use rules must be written before any other
 // rules"), así que Tailwind queda después de este bloque, no antes.
 @use '@angular/material' as mat;
+// Paleta M3 propia (moss/ochre), generada con:
+//   ng generate @angular/material:m3-theme --primary-color="#3F6656" --tertiary-color="#B6752E"
+// en vez de las paletas con nombre predefinidas de Material (`mat.$azure-palette` /
+// `mat.$blue-palette`) que traía el scaffold.
+@use 'theme-colors';
 
 @tailwind base;
 @tailwind components;
@@ -18,10 +23,15 @@ html {
   @include mat.theme(
     (
       color: (
-        primary: mat.$azure-palette,
-        tertiary: mat.$blue-palette,
+        primary: theme-colors.$primary-palette,
+        tertiary: theme-colors.$tertiary-palette,
       ),
-      typography: Roboto,
+      // Sin webfonts (ver index.html): pila de fuentes de sistema con fallback explícito,
+      // nunca un solo nombre como "Roboto" que puede degradar mal si no está instalada.
+      typography: (
+        plain-family: (system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif),
+        brand-family: (system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif),
+      ),
       density: 0,
     )
   );

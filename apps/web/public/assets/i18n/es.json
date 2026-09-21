@@ -7,11 +7,140 @@
     "inventory": "Inventario",
     "convert": "Conversión",
     "result": "Resultado",
-    "settings": "Ajustes"
+    "settings": "Ajustes",
+    "needsExport": "Subí un export para habilitar esta pantalla",
+    "activeExport": "Export activo: {{id}}…",
+    "startOver": "Empezar de nuevo"
   },
   "common": {
     "underConstruction": "Esta pantalla todavía no está implementada.",
     "retry": "Reintentar",
     "loading": "Cargando…"
+  },
+  "upload": {
+    "title": "Subí tu export de Claude.ai",
+    "privacy": {
+      "title": "Privacidad",
+      "body": "Nada sale de tu equipo salvo lo que subís acá: los archivos viajan solo al servidor local de esta app (la API que corre en tu propia máquina), se procesan para armar el inventario y la conversión, y se borran cuando eliminás el export. No hay telemetría ni llamadas a Internet."
+    },
+    "dropzone": {
+      "instructions": "Arrastrá acá los zips del export (y/o el member-manifest-*.json), o elegilos a mano.",
+      "chooseFiles": "Elegir archivos",
+      "ariaLabel": "Zona para soltar archivos del export. También podés usar el botón Elegir archivos."
+    },
+    "selectedFiles": {
+      "title": "Archivos seleccionados ({{count}})",
+      "remove": "Quitar {{name}} de la selección"
+    },
+    "actions": {
+      "submit": "Subir y continuar",
+      "uploading": "Subiendo…"
+    },
+    "errors": {
+      "network": "No se pudo conectar con la API. Revisá que esté corriendo y volvé a intentar.",
+      "tooLarge": "El archivo supera el tamaño máximo permitido por el servidor.",
+      "badFile": "El servidor no pudo aceptar estos archivos. Verificá que sean los zips del export o el member-manifest-*.json.",
+      "forbidden": "El servidor rechazó la subida (modo no permitido).",
+      "generic": "Ocurrió un error al subir el export. Volvé a intentar."
+    }
+  },
+  "inventory": {
+    "title": "Inventario del export",
+    "summary": {
+      "root": "Origen: {{root}}",
+      "format": {
+        "batched-manifest": "formato con manifiesto por lotes",
+        "legacy-single-zip": "formato legacy (un solo zip)"
+      }
+    },
+    "warnings": {
+      "title": "Avisos",
+      "missingCategories": "Categorías faltantes",
+      "missingParts": "{{category}}: faltan las partes {{parts}}"
+    },
+    "table": {
+      "category": "Categoría",
+      "files": "Archivos",
+      "size": "Tamaño",
+      "items": "Ítems aprox.",
+      "status": "Estado"
+    },
+    "status": {
+      "ok": "Completo, sin advertencias",
+      "warning": "Con advertencias o faltante"
+    },
+    "actions": {
+      "continue": "Continuar"
+    },
+    "errors": {
+      "notFound": "No se encontró este export. Puede haberse borrado o el enlace es incorrecto.",
+      "network": "No se pudo conectar con la API. Revisá que esté corriendo y volvé a intentar.",
+      "generic": "Ocurrió un error al cargar el inventario. Volvé a intentar."
+    }
+  },
+  "jobs": {
+    "title": "Conversión",
+    "noExport": "No hay un export seleccionado. Volvé al inicio para subir o elegir uno.",
+    "starting": "Iniciando la conversión…",
+    "connecting": "Conectando con el progreso de la conversión…",
+    "reconciling": "Verificando el estado de la conversión…",
+    "streaming": {
+      "title": "Progreso de la conversión",
+      "waiting": "Esperando el primer avance…"
+    },
+    "log": {
+      "entry": "{{category}}: {{done}}"
+    },
+    "summary": {
+      "title": "Conversión completada",
+      "errors": "Errores: {{count}}",
+      "warnings": "Advertencias: {{count}}"
+    },
+    "actions": {
+      "viewResult": "Ver resultado",
+      "backToStart": "Volver al inicio",
+      "backToInventory": "Volver al inventario",
+      "cancel": "Cancelar",
+      "cancelHint": "Esto solo te lleva de vuelta al inventario: la conversión sigue corriendo en el servidor, todavía no se puede interrumpir desde acá."
+    },
+    "errors": {
+      "notFound": "No se encontró este export. Puede haberse borrado o el enlace es incorrecto.",
+      "conflict": "Ya hay una conversión en curso para este export. Esperá a que termine e intentá de nuevo.",
+      "network": "No se pudo conectar con la API. Revisá que esté corriendo y volvé a intentar.",
+      "generic": "Ocurrió un error al iniciar la conversión. Volvé a intentar.",
+      "connectionLost": "Se perdió la conexión con el progreso de la conversión. Puede seguir corriendo en el servidor: estamos verificando el estado real.",
+      "timeout": "La conversión superó el tiempo máximo permitido y se detuvo.",
+      "failed": "La conversión terminó con un error en el servidor.",
+      "failedDetail": "Detalle: {{reason}}"
+    }
+  },
+  "result": {
+    "title": "Resultado de la conversión",
+    "tree": {
+      "title": "Archivos",
+      "empty": "Todavía no hay archivos convertidos."
+    },
+    "search": {
+      "label": "Buscar archivo",
+      "placeholder": "Buscar por nombre…"
+    },
+    "viewer": {
+      "selectPrompt": "Elegí un archivo del árbol para verlo acá.",
+      "loading": "Cargando archivo…",
+      "notPreviewable": "Este archivo no se puede previsualizar (contenido binario)."
+    },
+    "actions": {
+      "download": "Descargar zip"
+    },
+    "errors": {
+      "notFound": "Este export todavía no fue convertido, o no existe.",
+      "network": "No se pudo conectar con la API. Revisá que esté corriendo y volvé a intentar.",
+      "generic": "Ocurrió un error al cargar el árbol de archivos. Volvé a intentar.",
+      "file": {
+        "notFound": "No se encontró el archivo seleccionado.",
+        "network": "No se pudo conectar con la API. Revisá que esté corriendo y volvé a intentar.",
+        "generic": "No se pudo cargar el contenido del archivo."
+      }
+    }
   }
 }

@@ -1,0 +1,77 @@
+<div class="m-4 flex max-w-2xl flex-col gap-4">
+  <h1 class="text-xl font-display font-medium">{{ 'upload.title' | transloco }}</h1>
+
+  <mat-card>
+    <mat-card-content class="flex flex-col gap-1 text-sm">
+      <p class="font-medium">{{ 'upload.privacy.title' | transloco }}</p>
+      <p>{{ 'upload.privacy.body' | transloco }}</p>
+    </mat-card-content>
+  </mat-card>
+
+  <app-upload-dropzone (filesSelected)="onFilesSelected($event)" />
+
+  @if (selectedFiles().length > 0) {
+    <mat-card>
+      <mat-card-header>
+        <mat-card-title class="text-base">
+          {{ 'upload.selectedFiles.title' | transloco: { count: selectedFiles().length } }}
+        </mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        <mat-list>
+          @for (file of selectedFiles(); track file.name) {
+            <mat-list-item>
+              <span matListItemTitle class="break-all">{{ file.name }}</span>
+              <span matListItemLine>{{ file.size | bytesSize }}</span>
+              <button
+                matListItemMeta
+                mat-icon-button
+                type="button"
+                [disabled]="isUploading()"
+                [attr.aria-label]="'upload.selectedFiles.remove' | transloco: { name: file.name }"
+                (click)="removeFile(file.name)"
+              >
+                <svg
+                  viewBox="0 0 24 24"
+                  width="18"
+                  height="18"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="1.75"
+                  stroke-linecap="round"
+                  class="text-ink-dim"
+                  aria-hidden="true"
+                >
+                  <path d="M6 6l12 12M18 6L6 18" />
+                </svg>
+              </button>
+            </mat-list-item>
+          }
+        </mat-list>
+      </mat-card-content>
+    </mat-card>
+  }
+
+  @if (status() === 'error') {
+    <mat-card class="border-l-4 border-brick" role="alert">
+      <mat-card-content class="flex flex-col gap-2">
+        <p class="text-brick">{{ (errorKey() ?? 'upload.errors.generic') | transloco }}</p>
+        <div>
+          <button mat-flat-button color="primary" type="button" (click)="retry()">
+            {{ 'common.retry' | transloco }}
+          </button>
+        </div>
+      </mat-card-content>
+    </mat-card>
+  }
+
+  @if (isUploading()) {
+    <mat-progress-bar mode="indeterminate" [attr.aria-label]="'upload.actions.uploading' | transloco" />
+  }
+
+  <div>
+    <button mat-flat-button color="primary" type="button" [disabled]="!canSubmit()" (click)="submit()">
+      {{ (isUploading() ? 'upload.actions.uploading' : 'upload.actions.submit') | transloco }}
+    </button>
+  </div>
+</div>

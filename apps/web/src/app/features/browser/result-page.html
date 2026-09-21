@@ -1,0 +1,128 @@
+<div class="m-4 flex flex-col gap-4">
+  <div class="flex flex-wrap items-center justify-between gap-2">
+    <h1 class="text-xl font-display font-medium">{{ 'result.title' | transloco }}</h1>
+    <a mat-flat-button color="primary" [href]="downloadHref()" download>
+      {{ 'result.actions.download' | transloco }}
+    </a>
+  </div>
+
+  @switch (treeStatus()) {
+    @case ('loading') {
+      <mat-card>
+        <mat-card-content class="flex items-center gap-3 p-2">
+          <mat-progress-spinner diameter="24" mode="indeterminate" />
+          <span>{{ 'common.loading' | transloco }}</span>
+        </mat-card-content>
+      </mat-card>
+    }
+    @case ('error') {
+      <mat-card class="border-l-4 border-brick" role="alert">
+        <mat-card-content class="flex flex-col gap-2">
+          <p class="text-brick">{{ (treeErrorKey() ?? 'result.errors.generic') | transloco }}</p>
+          <div>
+            <button mat-flat-button color="primary" type="button" (click)="reloadTree()">
+              {{ 'common.retry' | transloco }}
+            </button>
+          </div>
+        </mat-card-content>
+      </mat-card>
+    }
+    @case ('success') {
+      <!-- Árbol y visor apilados en mobile (<640px, CA-5), lado a lado desde sm: -->
+      <div class="flex flex-col gap-4 sm:flex-row">
+        <mat-card class="sm:w-1/3 sm:min-w-64">
+          <mat-card-header>
+            <mat-card-title class="text-base">{{ 'result.tree.title' | transloco }}</mat-card-title>
+          </mat-card-header>
+          <mat-card-content class="flex flex-col gap-2">
+            <mat-form-field appearance="outline" class="w-full">
+              <mat-label>{{ 'result.search.label' | transloco }}</mat-label>
+              <input
+                matInput
+                type="search"
+                [placeholder]="'result.search.placeholder' | transloco"
+                [value]="searchQuery()"
+                (input)="onSearchInputEvent($event)"
+              />
+            </mat-form-field>
+
+            @if (rows().length === 0) {
+              <p class="text-sm opacity-70">{{ 'result.tree.empty' | transloco }}</p>
+            } @else {
+              <ul class="max-h-96 overflow-y-auto text-sm">
+                @for (row of rows(); track row.node.path) {
+                  <li [style.paddingLeft.px]="row.depth * 16">
+                    @if (row.node.kind === 'dir') {
+                      <span class="flex items-center gap-1.5 truncate py-1 font-medium">
+                        <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" class="shrink-0 text-ink-dim" aria-hidden="true">
+                          <path d="M3 6a1 1 0 0 1 1-1h5l2 2h9a1 1 0 0 1 1 1v10a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1z" />
+                        </svg>
+                        {{ row.node.name }}
+                      </span>
+                    } @else {
+                      <button
+                        type="button"
+                        class="flex w-full items-center gap-1.5 truncate rounded py-1 text-left hover:bg-moss-container/40"
+                        [class.font-semibold]="selectedPath() === row.node.path"
+                        [class.bg-moss-container]="selectedPath() === row.node.path"
+                        (click)="selectFile(row.node.path)"
+                      >
+                        <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" class="shrink-0 text-ink-dim" aria-hidden="true">
+                          <path d="M6 3h9l4 4v13a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1z" />
+                          <path d="M14 3v5h5" />
+                        </svg>
+                        <span class="truncate">{{ row.node.name }}</span>
+                        @if (row.node.size !== null) {
+                          <span class="text-ink-dim shrink-0">({{ row.node.size | bytesSize }})</span>
+                        }
+                      </button>
+                    }
+                  </li>
+                }
+              </ul>
+            }
+          </mat-card-content>
+        </mat-card>
+
+        <mat-card class="sm:flex-1">
+          <mat-card-header>
+            <mat-card-title class="truncate text-base">{{ selectedPath() ?? ('result.viewer.selectPrompt' | transloco) }}</mat-card-title>
+          </mat-card-header>
+          <mat-card-content>
+            @switch (fileStatus()) {
+              @case ('idle') {
+                @if (!selectedPath()) {
+                  <p class="text-sm opacity-70">{{ 'result.viewer.selectPrompt' | transloco }}</p>
+                }
+              }
+              @case ('loading') {
+                <div class="flex items-center gap-3 p-2">
+                  <mat-progress-spinner diameter="24" mode="indeterminate" />
+                  <span>{{ 'result.viewer.loading' | transloco }}</span>
+                </div>
+              }
+              @case ('not-previewable') {
+                <p class="text-sm opacity-70">{{ 'result.viewer.notPreviewable' | transloco }}</p>
+              }
+              @case ('error') {
+                <div class="flex flex-col gap-2">
+                  <p class="text-brick">{{ (fileErrorKey() ?? 'result.errors.file.generic') | transloco }}</p>
+                  <div>
+                    <button mat-flat-button color="primary" type="button" (click)="retryFile()">
+                      {{ 'common.retry' | transloco }}
+                    </button>
+                  </div>
+                </div>
+              }
+              @case ('success') {
+                <!-- Sin librería de Markdown esta ronda (ver ResultService / resumen de
+                     la tarea): se muestra el contenido tal cual, preformateado. -->
+                <pre class="max-h-[32rem] overflow-auto whitespace-pre-wrap break-words text-sm">{{ fileContent() }}</pre>
+              }
+            }
+          </mat-card-content>
+        </mat-card>
+      </div>
+    }
+  }
+</div>
