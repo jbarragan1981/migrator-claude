@@ -1,0 +1,142 @@
+<div class="m-4 flex max-w-3xl flex-col gap-4">
+  <h1 class="text-xl font-display font-medium">{{ 'jobs.title' | transloco }}</h1>
+
+  @switch (screenState()) {
+    @case ('no-export') {
+      <mat-card>
+        <mat-card-content class="flex flex-col gap-2">
+          <p>{{ 'jobs.noExport' | transloco }}</p>
+          <div>
+            <a mat-flat-button color="primary" routerLink="/">{{ 'jobs.actions.backToStart' | transloco }}</a>
+          </div>
+        </mat-card-content>
+      </mat-card>
+    }
+    @case ('starting') {
+      <mat-card>
+        <mat-card-content class="flex items-center gap-3 p-2">
+          <mat-progress-spinner diameter="24" mode="indeterminate" />
+          <span>{{ 'jobs.starting' | transloco }}</span>
+        </mat-card-content>
+      </mat-card>
+    }
+    @case ('convert-error') {
+      <mat-card class="border-l-4 border-brick" role="alert">
+        <mat-card-content class="flex flex-col gap-2">
+          <p class="text-brick">{{ (convertErrorKey() ?? 'jobs.errors.generic') | transloco }}</p>
+          <div class="flex flex-wrap gap-2">
+            <button mat-flat-button color="primary" type="button" (click)="retryConvert()">
+              {{ 'common.retry' | transloco }}
+            </button>
+            <a mat-stroked-button routerLink="/">{{ 'jobs.actions.backToStart' | transloco }}</a>
+          </div>
+        </mat-card-content>
+      </mat-card>
+    }
+    @case ('connecting') {
+      <mat-card>
+        <mat-card-content class="flex items-center gap-3 p-2">
+          <mat-progress-spinner diameter="24" mode="indeterminate" />
+          <span>{{ 'jobs.connecting' | transloco }}</span>
+        </mat-card-content>
+      </mat-card>
+    }
+    @case ('reconciling') {
+      <mat-card>
+        <mat-card-content class="flex items-center gap-3 p-2">
+          <mat-progress-spinner diameter="24" mode="indeterminate" />
+          <span>{{ 'jobs.reconciling' | transloco }}</span>
+        </mat-card-content>
+      </mat-card>
+    }
+    @case ('connection-lost') {
+      <mat-card class="border-l-4 border-ochre" role="alert">
+        <mat-card-content class="flex flex-col gap-2">
+          <p>{{ 'jobs.errors.connectionLost' | transloco }}</p>
+          @if (reconciliationFailed()) {
+            <p class="text-brick">{{ 'jobs.errors.network' | transloco }}</p>
+          }
+          <div>
+            <button mat-flat-button color="primary" type="button" (click)="retryConnectionCheck()">
+              {{ 'common.retry' | transloco }}
+            </button>
+          </div>
+        </mat-card-content>
+      </mat-card>
+    }
+    @case ('job-error') {
+      <mat-card class="border-l-4 border-brick" role="alert">
+        <mat-card-content class="flex flex-col gap-2">
+          <p class="text-brick">{{ (isTimeout() ? 'jobs.errors.timeout' : 'jobs.errors.failed') | transloco }}</p>
+          @if (!isTimeout() && failureReason()) {
+            <p class="text-sm opacity-70">
+              {{ 'jobs.errors.failedDetail' | transloco: { reason: failureReason() } }}
+            </p>
+          }
+          <div class="flex flex-wrap gap-2">
+            <button mat-flat-button color="primary" type="button" (click)="retryConvert()">
+              {{ 'common.retry' | transloco }}
+            </button>
+            <button mat-stroked-button type="button" (click)="cancel()">
+              {{ 'jobs.actions.backToInventory' | transloco }}
+            </button>
+          </div>
+        </mat-card-content>
+      </mat-card>
+    }
+    @case ('streaming') {
+      <mat-card>
+        <mat-card-header>
+          <mat-card-title class="text-base">{{ 'jobs.streaming.title' | transloco }}</mat-card-title>
+        </mat-card-header>
+        <mat-card-content class="flex flex-col gap-3">
+          <mat-progress-bar mode="indeterminate" [attr.aria-label]="'jobs.streaming.title' | transloco" />
+          @if (events().length > 0) {
+            <mat-list>
+              @for (event of events(); track $index) {
+                <mat-list-item>{{ 'jobs.log.entry' | transloco: { category: event.category, done: event.done } }}</mat-list-item>
+              }
+            </mat-list>
+          } @else {
+            <p class="text-sm opacity-70">{{ 'jobs.streaming.waiting' | transloco }}</p>
+          }
+        </mat-card-content>
+      </mat-card>
+      <div>
+        <button mat-stroked-button type="button" (click)="cancel()">
+          {{ 'jobs.actions.cancel' | transloco }}
+        </button>
+        <p class="mt-1 text-xs opacity-70">{{ 'jobs.actions.cancelHint' | transloco }}</p>
+      </div>
+    }
+    @case ('done') {
+      <mat-card class="border-l-4 border-moss">
+        <mat-card-header>
+          <mat-card-title class="text-base">{{ 'jobs.summary.title' | transloco }}</mat-card-title>
+        </mat-card-header>
+        <mat-card-content class="flex flex-col gap-2 text-sm">
+          @if (summary(); as summary) {
+            @if (summary.counts) {
+              <ul class="list-disc pl-5">
+                @for (entry of summary.counts | keyvalue; track entry.key) {
+                  <li>{{ entry.key }}: {{ entry.value }}</li>
+                }
+              </ul>
+            }
+            @if (summary.errors !== null) {
+              <p>{{ 'jobs.summary.errors' | transloco: { count: summary.errors } }}</p>
+            }
+            @if (summary.warnings !== null) {
+              <p>{{ 'jobs.summary.warnings' | transloco: { count: summary.warnings } }}</p>
+            }
+          }
+        </mat-card-content>
+      </mat-card>
+      <div>
+        <button mat-flat-button color="primary" type="button" (click)="viewResult()">
+          {{ 'jobs.actions.viewResult' | transloco }}
+        </button>
+      </div>
+    }
+  }
+</div>

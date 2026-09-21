@@ -1,0 +1,49 @@
+{#
+  Un documento de conocimiento de un proyecto (spec 04). Variables disponibles:
+    doc          entidad ProjectDoc completa, por si una plantilla propia necesita más
+    project      entidad Project a la que pertenece
+    id           uuid del doc en el export (o el id sintético que le dio el parser)
+    type         siempre "project_doc"
+    title        `filename` del export tal cual, con su extensión (es parte del nombre
+                 que el usuario vio en Claude.ai), o el id si no vino
+    created_at   ISO-8601 UTC, o null si el export no la trae
+    updated_at   el export no trae fecha de actualización de un doc: siempre null
+    source_file  archivo del export del que salió (el del proyecto)
+    project_id   uuid del proyecto dueño
+    filename     nombre original del archivo en Claude.ai, tal cual vino
+    tags         lista de etiquetas del frontmatter
+    extra        campos que no reconocemos, tal cual vinieron
+    content      texto del documento, que ya es Markdown y se inserta sin tocar; null
+                 mientras el export no lo traiga (spec 03, projects CA-3)
+    notice       por qué no hay contenido, cuando `content` es null; null si lo hay
+    project_title nombre legible del proyecto dueño
+    project_link enlace relativo al project.md del proyecto
+  Nada de la corrida actual (fecha, versión) puede aparecer aquí: spec 04 CA-10.
+-#}
+---
+id: {{ id | yaml_value }}
+type: {{ type | yaml_value }}
+title: {{ title | yaml_value }}
+created_at: {{ created_at | yaml_value }}
+updated_at: {{ updated_at | yaml_value }}
+source_file: {{ source_file | yaml_value }}
+project_id: {{ project_id | yaml_value }}
+{% if filename is not none %}
+filename: {{ filename | yaml_value }}
+{% endif %}
+tags: {{ tags | yaml_inline }}
+{% if extra %}
+extra:
+{{ extra | yaml_block }}
+{% endif %}
+---
+
+# {{ title }}
+
+Documento del proyecto [{{ project_title | md_cell }}]({{ project_link }}).
+
+{% if content is none %}
+> {{ notice }}
+{% else %}
+{{ content }}
+{% endif %}

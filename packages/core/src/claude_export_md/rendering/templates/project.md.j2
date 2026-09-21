@@ -1,0 +1,95 @@
+{#
+  Un proyecto (spec 04). Variables disponibles:
+    project        entidad Project completa, por si una plantilla propia necesita más
+    id             uuid del proyecto en el export
+    type           siempre "project"
+    title          `name` del export, o "Proyecto sin título" si venía vacío
+    created_at     ISO-8601 UTC, o null si el export no la trae
+    updated_at     ISO-8601 UTC, o null
+    source_file    archivo del export del que salió
+    creator_id     `creator.uuid` del export (spec 03, projects CA-5); null si no vino
+    tags           lista de etiquetas del frontmatter
+    extra          campos que no reconocemos (is_private, is_starter_project…)
+    description    `description` del export; "" se emite, null se omite
+    instructions   `prompt_template` del export; "" se emite, null se omite (CA-2)
+    docs           un doc por entrada de docs[]: {title, created_at, link, available,
+                   status} — `available` es falso y `status` lo dice mientras el export
+                   no traiga el contenido del documento (spec 03, projects CA-3)
+    doc_count      cuántos documentos trae el proyecto
+    conversations  uuid de las conversaciones que apuntan a este proyecto; el enlace lo
+                   resuelve `convert` desde conversations[].project_uuid (CA-4)
+    conversation_rows  las mismas conversaciones ya resueltas a archivo:
+                   {id, title, link, day}, ordenadas por fecha descendente y con `link`
+                   relativo a ESTE archivo; vacío si nadie las cruzó todavía
+    notes          frases fijas para cuando no hay nada que mostrar: empty_description,
+                   empty_instructions, no_docs, no_conversations (nunca una sección
+                   vacía sin explicación, CLAUDE.md §1.3)
+  Nada de la corrida actual (fecha, versión) puede aparecer aquí: spec 04 CA-10.
+-#}
+---
+id: {{ id | yaml_value }}
+type: {{ type | yaml_value }}
+title: {{ title | yaml_value }}
+created_at: {{ created_at | yaml_value }}
+updated_at: {{ updated_at | yaml_value }}
+source_file: {{ source_file | yaml_value }}
+{% if creator_id %}
+creator_id: {{ creator_id | yaml_value }}
+{% endif %}
+doc_count: {{ doc_count | yaml_value }}
+tags: {{ tags | yaml_inline }}
+{% if extra %}
+extra:
+{{ extra | yaml_block }}
+{% endif %}
+---
+
+# {{ title }}
+{% if description is not none %}
+
+## Descripción
+
+{% if description | trim %}
+{{ description }}
+{% else %}
+_{{ notes.empty_description }}_
+{% endif %}
+{% endif %}
+{% if instructions is not none %}
+
+## Instrucciones
+
+{% if instructions | trim %}
+{{ instructions }}
+{% else %}
+_{{ notes.empty_instructions }}_
+{% endif %}
+{% endif %}
+
+## Documentos
+
+{% if docs %}
+| Documento | Creado | Contenido |
+|---|---|---|
+{% for doc in docs %}
+| [{{ doc.title | md_cell }}]({{ doc.link }}) | {{ doc.created_at | md_cell }} | {{ doc.status | md_cell }} |
+{% endfor %}
+{% else %}
+_{{ notes.no_docs }}_
+{% endif %}
+
+## Conversaciones
+
+{% if conversation_rows %}
+| Conversación | Fecha |
+|---|---|
+{% for row in conversation_rows %}
+| [{{ row.title | md_cell }}]({{ row.link }}) | {{ row.day | md_cell }} |
+{% endfor %}
+{% elif conversations %}
+{% for conversation_id in conversations %}
+- `{{ conversation_id }}`
+{% endfor %}
+{% else %}
+_{{ notes.no_conversations }}_
+{% endif %}

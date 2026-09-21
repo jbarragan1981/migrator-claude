@@ -1,0 +1,21 @@
+{
+  "created_at": "<str:32>",
+  "creator": {
+    "full_name": "<str:7>",
+    "uuid": "<str:36>"
+  },
+  "description": "<str:105>",
+  "docs": [
+    {
+      "created_at": "<str:32>",
+      "filename": "<str:50>",
+      "uuid": "<str:36>"
+    }
+  ],
+  "is_private": true,
+  "is_starter_project": false,
+  "name": "<str:33>",
+  "prompt_template": "<str:0>",
+  "updated_at": "<str:32>",
+  "uuid": "<str:36>"
+}

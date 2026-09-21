@@ -6,9 +6,10 @@ Uso: python scripts/anonymize_fixture.py entrada.json salida.json [--keep-struct
 - UUIDs → uuid determinista derivado (mismo uuid → mismo reemplazo, se conservan las relaciones)
 - URLs → https://example.com/<hash corto>
 - Cadenas largas (texto de conversaciones) → texto lorem con la misma longitud aproximada
-- Con --keep-structure-only, TODA cadena se reemplaza por "<str:len>" (útil para documentar estructura)
+- Con --keep-structure-only, TODA cadena se reemplaza por "<str:len>" (para documentar estructura)
 Solo biblioteca estándar. Nunca se ejecuta sobre exports/ desde Claude Code: córrelo tú a mano.
 """
+
 from __future__ import annotations
 
 import hashlib
@@ -21,8 +22,10 @@ from pathlib import Path
 EMAIL = re.compile(r"[\w.+-]+@[\w-]+\.[\w.-]+")
 UUID = re.compile(r"[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}")
 URL = re.compile(r"https?://\S+")
-LOREM = ("lorem ipsum dolor sit amet consectetur adipiscing elit sed do eiusmod tempor "
-         "incididunt ut labore et dolore magna aliqua ").split()
+LOREM = (
+    "lorem ipsum dolor sit amet consectetur adipiscing elit sed do eiusmod tempor "
+    "incididunt ut labore et dolore magna aliqua "
+).split()
 
 _emails: dict[str, str] = {}
 
@@ -69,9 +72,23 @@ def anon_str(s: str, structure_only: bool) -> str:
     return s
 
 
+def anon_key(k: str) -> str:
+    # Las claves de dict (p. ej. un objeto indexado por uuid o email) también
+    # pueden ser datos reales; a diferencia de anon_str, siempre se sustituyen
+    # de forma determinista (nunca "<str:len>") para no colisionar dos claves
+    # distintas en una sola al aplanar con --keep-structure-only.
+    m = UUID.fullmatch(k)
+    if m:
+        return anon_uuid(m)
+    m = EMAIL.fullmatch(k)
+    if m:
+        return anon_email(m)
+    return k
+
+
 def walk(o: object, structure_only: bool) -> object:
     if isinstance(o, dict):
-        return {k: walk(v, structure_only) for k, v in o.items()}
+        return {anon_key(k): walk(v, structure_only) for k, v in o.items()}
     if isinstance(o, list):
         return [walk(v, structure_only) for v in o]
     if isinstance(o, str):
@@ -87,7 +104,10 @@ def main() -> None:
     structure_only = "--keep-structure-only" in sys.argv
     data = json.loads(src.read_text(encoding="utf-8"))
     dst.parent.mkdir(parents=True, exist_ok=True)
-    dst.write_text(json.dumps(walk(data, structure_only), ensure_ascii=False, indent=2, sort_keys=True), encoding="utf-8")
+    dst.write_text(
+        json.dumps(walk(data, structure_only), ensure_ascii=False, indent=2, sort_keys=True),
+        encoding="utf-8",
+    )
     print(f"OK → {dst} ({len(_emails)} correos anonimizados)")
 
 

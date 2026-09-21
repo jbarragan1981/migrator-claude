@@ -1,0 +1,80 @@
+# serializer version: 1
+# name: test_snapshot_of_the_index
+  '''
+  # Índice del export
+  
+  ## Conversaciones (5)
+  
+  | Fecha | Conversación | Proyecto | Mensajes |
+  | --- | --- | --- | --- |
+  | 2026-03-03 | [Primera](conversations/2026/03/a.md) | — | — |
+  | 2026-03-02 | [Segunda](conversations/2026/03/b.md) | — | — |
+  | 2026-03-01 | [Tercera](conversations/2026/03/c.md) | — | — |
+  | 2026-01-15 | [Análisis Ñandú / Q3](conversations/2026/01/2026-01-15_analisis-nandu-q3_a1a1a1a1.md) | [Cocina casera](projects/cocina-casera/project.md) | 1 |
+  | — | [Sin fecha](conversations/sin-fecha/z.md) | — | — |
+  
+  ## Proyectos (1)
+  
+  | Actualizado | Proyecto | Conversaciones | Documentos |
+  | --- | --- | --- | --- |
+  | 2026-03-04 | [Cocina casera](projects/cocina-casera/project.md) | 1 | 1 |
+  
+  ## Memorias (1)
+  
+  | Actualizada | Memoria | Proyecto |
+  | --- | --- | --- |
+  | — | [Memoria de conversaciones](memories/conversations-memory.md) | — |
+  
+  ## Artefactos (1)
+  
+  | Actualizado | Artefacto | Tipo | Contenido |
+  | --- | --- | --- | --- |
+  | 2026-03-02 | [Informe de ventas Q3](frames/informe-de-ventas-q3.md) | document | No disponible en este export |
+  
+  ## Cuenta (1)
+  
+  - [Persona Ñandú](account/account.md)
+  
+  '''
+# ---
+# name: test_snapshot_of_the_readme
+  '''
+  # Export de Claude.ai en Markdown
+  
+  Esta carpeta es la conversión a Markdown de una exportación de datos de Claude.ai.
+  Se generó con `claude-export-md` en la máquina del usuario: nada se descargó de
+  Internet y nada salió de ella.
+  
+  ## De dónde salió
+  
+  | Dato | Valor |
+  | --- | --- |
+  | Export | `mi-export` |
+  | Formato | `batched-manifest` |
+  | Fecha del export | 2026-09-18T16:59:47Z |
+  
+  ## Qué se convirtió
+  
+  | Categoría | Ítems |
+  | --- | --- |
+  | conversations | 4 |
+  | memories | 6 |
+  
+  ## Cómo está organizado
+  
+  Solo se listan las carpetas que este export produjo: lo que no venía en el export no se
+  crea vacío.
+  
+  - [`_index.md`](_index.md) — índice de todo, con enlaces relativos.
+  - `conversations/YYYY/MM/` — una conversación por archivo; los bloques de código
+    largos que traía el mensaje se extrajeron a su carpeta `artifacts/`. Si la
+    conversación pertenecía a un proyecto, enlaza a su `project.md`.
+  - `memories/` — las memorias de la cuenta, respetando su ruta original.
+  - `_report/` — `summary.json` (qué se convirtió), `errors.jsonl` (una línea por ítem
+    que no se pudo parsear) e `inventory.json` (qué traía el export).
+  
+  
+  Categorías que este export no traía: frames, projects.
+  
+  '''
+# ---

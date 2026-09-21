@@ -1,0 +1,55 @@
+# serializer version: 1
+# name: test_snapshot_of_the_account
+  dict({
+    'account/account-89d07480.md': '''
+      ---
+      id: 99999999-8888-4777-8666-555555555555
+      type: account
+      title: Persona Sintética
+      created_at: null
+      updated_at: null
+      source_file: light_metadata-000/light_metadata.json
+      tags: [account]
+      extra:
+        verified_phone_number: null
+      ---
+      
+      # Persona Sintética
+      
+      | Campo | Valor |
+      |---|---|
+      | Identificador | `99999999-8888-4777-8666-555555555555` |
+      | Nombre | Persona Sintética |
+      | Correo | persona@example.com |
+  
+    ''',
+    'account/account-cf4c4732.md': '''
+      ---
+      id: 11111111-2222-4333-8444-555555555555
+      type: account
+      title: Persona Sintética
+      created_at: null
+      updated_at: null
+      source_file: light_metadata-000/light_metadata.json
+      tags: [account]
+      extra:
+        verified_phone_number: null
+      ---
+      
+      # Persona Sintética
+      
+      | Campo | Valor |
+      |---|---|
+      | Identificador | `11111111-2222-4333-8444-555555555555` |
+      | Nombre | Persona Sintética |
+      | Correo | persona@example.com |
+      
+      ## Configuración
+      
+      | Clave | Valor |
+      |---|---|
+      | locale | es-CO |
+  
+    ''',
+  })
+# ---

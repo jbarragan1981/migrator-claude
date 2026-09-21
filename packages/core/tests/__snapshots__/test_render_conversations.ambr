@@ -1,0 +1,331 @@
+# serializer version: 1
+# name: test_snapshot_of_every_conversation
+  dict({
+    'conversations/2026/01/2026-01-15_analisis-nandu-q3_a1a1a1a1.md': '''
+      ---
+      id: a1a1a1a1-1111-4000-8000-000000000001
+      type: conversation
+      title: Analisis Nandu / Q3
+      created_at: '2026-01-15T14:32:05Z'
+      updated_at: '2026-01-15T15:10:47Z'
+      source_file: conversations-000/conversations.json
+      summary: Repaso del informe de ventas del trimestre
+      message_count: 2
+      tags: [conversation]
+      extra:
+        account:
+          uuid: 11111111-2222-4333-8444-555555555555
+      ---
+      
+      # Analisis Nandu / Q3
+      
+      ## 👤 Usuario — 14:32
+      
+      Hola, el informe de ventas tarda muchisimo.
+      Podes revisar `scripts/ventas.py` y decirme que esta mal?
+      
+      ## 🤖 Claude — 14:33
+      
+      <details>
+      <summary>🧠 Razonamiento</summary>
+      
+      **Resumen**
+      
+      - Revisar el script antes de responder
+      - Buscar el recalculo dentro del bucle
+      
+      El usuario tiene un script lento. Lo mas probable es un recalculo dentro del bucle.
+      Conviene leer el archivo antes de opinar.
+      
+      **Metadatos**
+      
+      ```json
+      {
+        "cut_off": false,
+        "hidden": false,
+        "start_timestamp": "2026-01-15T14:33:18.000000Z",
+        "stop_timestamp": "2026-01-15T14:33:40.000000Z",
+        "thinking_hidden": false,
+        "truncated": false
+      }
+      ```
+      
+      </details>
+      
+      <details>
+      <summary>🔧 Uso de herramienta: <code>read_file</code></summary>
+      
+      Leyendo el archivo
+      
+      **Entrada**
+      
+      ```json
+      {
+        "description": "Leer el script de ventas",
+        "path": "/home/usuaria/proyecto/scripts/ventas.py"
+      }
+      ```
+      
+      **Metadatos**
+      
+      ```json
+      {
+        "display_content": {
+          "text": "Leyendo scripts/ventas.py",
+          "type": "text"
+        },
+        "icon_name": "file",
+        "id": "toolu_0000000000000001",
+        "start_timestamp": "2026-01-15T14:33:41.000000Z",
+        "stop_timestamp": "2026-01-15T14:33:42.000000Z"
+      }
+      ```
+      
+      </details>
+      
+      <details>
+      <summary>📋 Resultado de <code>read_file</code></summary>
+      
+      **Salida**
+      
+      ```
+         1  linea 1 del archivo scripts/ventas.py
+         2  linea 2 del archivo scripts/ventas.py
+         3  linea 3 del archivo scripts/ventas.py
+         4  linea 4 del archivo scripts/ventas.py
+         5  linea 5 del archivo scripts/ventas.py
+         6  linea 6 del archivo scripts/ventas.py
+         7  linea 7 del archivo scripts/ventas.py
+         8  linea 8 del archivo scripts/ventas.py
+         9  linea 9 del archivo scripts/ventas.py
+        10  linea 10 del archivo scripts/ventas.py
+        11  linea 11 del archivo scripts/ventas.py
+        12  linea 12 del archivo scripts/ventas.py
+        13  linea 13 del archivo scripts/ventas.py
+        14  linea 14 del archivo scripts/ventas.py
+        15  linea 15 del archivo scripts/ventas.py
+        16  linea 16 del archivo scripts/ventas.py
+        17  linea 17 del archivo scripts/ventas.py
+        18  linea 18 del archivo scripts/ventas.py
+        19  linea 19 del archivo scripts/ventas.py
+        20  linea 20 del archivo scripts/ventas.py
+        21  linea 21 del archivo scripts/ventas.py
+        22  linea 22 del archivo scripts/ventas.py
+        23  linea 23 del archivo scripts/ventas.py
+        24  linea 24 del archivo scripts/ventas.py
+        25  linea 25 del archivo scripts/ventas.py
+        26  linea 26 del archivo scripts/ventas.py
+        27  linea 27 del archivo scripts/ventas.py
+        28  linea 28 del archivo scripts/ventas.py
+        29  linea 29 del archivo scripts/ventas.py
+        30  linea 30 del archivo scripts/ventas.py
+        31  linea 31 del archivo scripts/ventas.py
+        32  linea 32 del archivo scripts/ventas.py
+        33  linea 33 del archivo scripts/ventas.py
+        34  linea 34 del archivo scripts/ventas.py
+        35  linea 35 del archivo scripts/ventas.py
+        36  linea 36 del archivo scripts/ventas.py
+        37  linea 37 del archivo scripts/ventas.py
+        38  linea 38 del archivo scripts/ventas.py
+        39  linea 39 del archivo scripts/ventas.py
+        40  linea 40 del archivo scripts/ventas.py
+        41  linea 41 del archivo scripts/ventas.py
+        42  linea 42 del archivo scripts/ventas.py
+        43  linea 43 del archivo scripts/ventas.py
+        44  linea 44 del archivo scripts/ventas.py
+        45  linea 45 del archivo scripts/ventas.py
+        46  linea 46 del archivo scripts/ventas.py
+        47  linea 47 del archivo scripts/ventas.py
+        48  linea 48 del archivo scripts/ventas.py
+        49  linea 49 del archivo scripts/ventas.py
+        50  linea 50 del archivo scripts/ventas.py
+        51  linea 51 del archivo scripts/ventas.py
+        52  linea 52 del archivo scripts/ventas.py
+        53  linea 53 del archivo scripts/ventas.py
+        54  linea 54 del archivo scripts/ventas.py
+        55  linea 55 del archivo scripts/ventas.py
+        56  linea 56 del archivo scripts/ventas.py
+        57  linea 57 del archivo scripts/ventas.py
+        58  linea 58 del archivo scripts/ventas.py
+        59  linea 59 del archivo scripts/ventas.py
+        60  linea 60 del archivo scripts/ventas.py
+      ```
+      
+      **Metadatos**
+      
+      ```json
+      {
+        "icon_name": "file",
+        "is_error": false,
+        "meta": {
+          "output_format_category": "txt"
+        },
+        "tool_use_id": "toolu_0000000000000001"
+      }
+      ```
+      
+      </details>
+      
+      He revisado el script: el cuello de botella esta en que recalcula el total
+      dentro del bucle, una vez por cada venta.
+      
+      Te dejo la version corregida de `scripts/ventas.py`:
+      
+      > 📄 **Artefacto extraído** · [01-ventas.py](2026-01-15_analisis-nandu-q3_a1a1a1a1/artifacts/01-ventas.py) · 48 líneas · `python`
+      
+      ---
+      
+      Para comprobarlo basta con:
+      
+      ```bash
+      uv run python scripts/ventas.py
+      echo $?
+      ```
+      
+      Con eso el informe del trimestre sale en menos de un segundo.
+  
+    ''',
+    'conversations/2026/02/2026-02-03_sin-titulo_b2b2b2b2.md': '''
+      ---
+      id: b2b2b2b2-2222-4000-8000-000000000002
+      type: conversation
+      title: Conversación sin título
+      created_at: '2026-02-03T06:05:00Z'
+      updated_at: '2026-02-03T06:20:00Z'
+      source_file: conversations-000/conversations.json
+      project_id: ffffffff-0000-4000-8000-000000000001
+      summary: ''
+      message_count: 2
+      tags: [conversation, project]
+      extra:
+        account:
+          uuid: 11111111-2222-4333-8444-555555555555
+      ---
+      
+      # Conversación sin título
+      
+      ## 👤 Usuario — 06:05
+      
+      Segui con el plan del proyecto, por favor.
+      
+      ## 🤖 Claude — 06:06
+      
+      Voy con el plan.
+      
+      <details>
+      <summary>❓ Bloque <code>vision_preview</code></summary>
+      
+      **Contenido**
+      
+      ```json
+      {
+        "caption": "Un bloque de un tipo que todavia no conocemos",
+        "payload_version": 3
+      }
+      ```
+      
+      </details>
+  
+    ''',
+    'conversations/2026/03/2026-03-02_mensajes-con-forma-inesperada_d4d4d4d4.md': '''
+      ---
+      id: d4d4d4d4-4444-4000-8000-000000000004
+      type: conversation
+      title: Mensajes con forma inesperada
+      created_at: '2026-03-02T09:00:00Z'
+      updated_at: '2026-03-02T09:00:00Z'
+      source_file: conversations-000/conversations.json
+      summary: ''
+      message_count: 0
+      tags: [conversation]
+      extra:
+        account:
+          uuid: 11111111-2222-4333-8444-555555555555
+      ---
+      
+      # Mensajes con forma inesperada
+  
+    ''',
+    'conversations/sin-fecha/charla-sin-fecha_c3c3c3c3.md': '''
+      ---
+      id: c3c3c3c3-3333-4000-8000-000000000003
+      type: conversation
+      title: Charla sin fecha
+      created_at: null
+      updated_at: null
+      source_file: conversations-000/conversations.json
+      message_count: 2
+      tags: [conversation]
+      extra:
+        account:
+          uuid: 11111111-2222-4333-8444-555555555555
+      ---
+      
+      # Charla sin fecha
+      
+      ## 👤 Usuario
+      
+      Una conversacion que el export trajo sin fechas.
+      
+      ## 🤖 Claude
+      
+      Un mensaje que el export trajo sin uuid.
+  
+    ''',
+  })
+# ---
+# name: test_snapshot_of_the_extracted_artifacts
+  dict({
+    'conversations/2026/01/2026-01-15_analisis-nandu-q3_a1a1a1a1/artifacts/01-ventas.py': '''
+      """Informe de ventas del trimestre."""
+      
+      from __future__ import annotations
+      
+      from dataclasses import dataclass
+      from decimal import Decimal
+      
+      IVA = Decimal('0.21')
+      
+      
+      @dataclass(frozen=True)
+      class Venta:
+          region: str
+          importe: Decimal
+      
+      
+      def total(ventas: list[Venta]) -> Decimal:
+          return sum((v.importe for v in ventas), Decimal(0))
+      
+      
+      def total_con_iva(ventas: list[Venta]) -> Decimal:
+          return total(ventas) * (1 + IVA)
+      
+      
+      def por_region(ventas: list[Venta]) -> dict[str, Decimal]:
+          acumulado: dict[str, Decimal] = {}
+          for venta in ventas:
+              acumulado[venta.region] = acumulado.get(venta.region, Decimal(0)) + venta.importe
+          return acumulado
+      
+      
+      def informe(ventas: list[Venta]) -> str:
+          lineas = ['# Ventas del trimestre', '']
+          for region, importe in sorted(por_region(ventas).items()):
+              lineas.append(f'- {region}: {importe:.2f}')
+          lineas.append('')
+          lineas.append(f'Total: {total(ventas):.2f}')
+          lineas.append(f'Total con IVA: {total_con_iva(ventas):.2f}')
+          return '\n'.join(lineas)
+      
+      
+      def main() -> None:
+          ventas = [Venta('norte', Decimal('1200')), Venta('sur', Decimal('980'))]
+          print(informe(ventas))
+      
+      
+      if __name__ == '__main__':
+          main()
+  
+    ''',
+  })
+# ---

@@ -1,0 +1,26 @@
+# Raíz del workspace de uv. Sin [project]: es un workspace virtual, no un paquete instalable.
+# Los paquetes reales viven en packages/core, apps/cli, apps/api (ver CLAUDE.md §3).
+[tool.uv.workspace]
+members = ["packages/core", "apps/cli", "apps/api"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py312"
+src = ["packages/core/src", "apps/cli/src", "apps/api/src"]
+# .claude/hooks y scripts/ son utilidades de infraestructura fuera del workspace
+# de paquetes (ver CLAUDE.md §3); no siguen el estilo de packages/ y apps/.
+extend-exclude = [".claude", "scripts"]
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B"]
+
+[tool.mypy]
+python_version = "3.12"
+
+# ijson no publica stubs ni py.typed; es la única dependencia sin tipos de core.
+[[tool.mypy.overrides]]
+module = ["ijson.*"]
+ignore_missing_imports = true
+
+[tool.pytest.ini_options]
+testpaths = ["packages/core/tests", "apps/cli/tests", "apps/api/tests"]

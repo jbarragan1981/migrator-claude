@@ -1,0 +1,146 @@
+{
+  "app": {
+    "title": "claude-export-md"
+  },
+  "nav": {
+    "upload": "Home",
+    "inventory": "Inventory",
+    "convert": "Conversion",
+    "result": "Result",
+    "settings": "Settings",
+    "needsExport": "Upload an export to enable this screen",
+    "activeExport": "Active export: {{id}}…",
+    "startOver": "Start over"
+  },
+  "common": {
+    "underConstruction": "This screen is not implemented yet.",
+    "retry": "Retry",
+    "loading": "Loading…"
+  },
+  "upload": {
+    "title": "Upload your Claude.ai export",
+    "privacy": {
+      "title": "Privacy",
+      "body": "Nothing leaves your computer except what you upload here: the files travel only to this app's local server (the API running on your own machine), get processed to build the inventory and the conversion, and are deleted when you remove the export. No telemetry, no calls to the Internet."
+    },
+    "dropzone": {
+      "instructions": "Drag the export zips here (and/or the member-manifest-*.json), or pick them manually.",
+      "chooseFiles": "Choose files",
+      "ariaLabel": "Drop zone for export files. You can also use the Choose files button."
+    },
+    "selectedFiles": {
+      "title": "Selected files ({{count}})",
+      "remove": "Remove {{name}} from the selection"
+    },
+    "actions": {
+      "submit": "Upload and continue",
+      "uploading": "Uploading…"
+    },
+    "errors": {
+      "network": "Could not connect to the API. Check that it's running and try again.",
+      "tooLarge": "The file exceeds the maximum size allowed by the server.",
+      "badFile": "The server could not accept these files. Check that they are the export zips or the member-manifest-*.json.",
+      "forbidden": "The server rejected the upload (mode not allowed).",
+      "generic": "Something went wrong uploading the export. Try again."
+    }
+  },
+  "inventory": {
+    "title": "Export inventory",
+    "summary": {
+      "root": "Source: {{root}}",
+      "format": {
+        "batched-manifest": "batched-manifest format",
+        "legacy-single-zip": "legacy format (single zip)"
+      }
+    },
+    "warnings": {
+      "title": "Warnings",
+      "missingCategories": "Missing categories",
+      "missingParts": "{{category}}: missing parts {{parts}}"
+    },
+    "table": {
+      "category": "Category",
+      "files": "Files",
+      "size": "Size",
+      "items": "Approx. items",
+      "status": "Status"
+    },
+    "status": {
+      "ok": "Complete, no warnings",
+      "warning": "Has warnings or is missing"
+    },
+    "actions": {
+      "continue": "Continue"
+    },
+    "errors": {
+      "notFound": "This export was not found. It may have been deleted or the link is wrong.",
+      "network": "Could not connect to the API. Check that it's running and try again.",
+      "generic": "Something went wrong loading the inventory. Try again."
+    }
+  },
+  "jobs": {
+    "title": "Conversion",
+    "noExport": "There is no export selected. Go back to the start to upload or pick one.",
+    "starting": "Starting the conversion…",
+    "connecting": "Connecting to the conversion progress…",
+    "reconciling": "Checking the conversion status…",
+    "streaming": {
+      "title": "Conversion progress",
+      "waiting": "Waiting for the first update…"
+    },
+    "log": {
+      "entry": "{{category}}: {{done}}"
+    },
+    "summary": {
+      "title": "Conversion complete",
+      "errors": "Errors: {{count}}",
+      "warnings": "Warnings: {{count}}"
+    },
+    "actions": {
+      "viewResult": "View result",
+      "backToStart": "Back to start",
+      "backToInventory": "Back to inventory",
+      "cancel": "Cancel",
+      "cancelHint": "This only takes you back to the inventory: the conversion keeps running on the server, it can't be interrupted from here yet."
+    },
+    "errors": {
+      "notFound": "This export was not found. It may have been deleted or the link is wrong.",
+      "conflict": "A conversion is already running for this export. Wait for it to finish and try again.",
+      "network": "Could not connect to the API. Check that it's running and try again.",
+      "generic": "Something went wrong starting the conversion. Try again.",
+      "connectionLost": "Lost the connection to the conversion progress. It may still be running on the server: checking the real status.",
+      "timeout": "The conversion exceeded the maximum allowed time and stopped.",
+      "failed": "The conversion finished with a server-side error.",
+      "failedDetail": "Detail: {{reason}}"
+    }
+  },
+  "result": {
+    "title": "Conversion result",
+    "tree": {
+      "title": "Files",
+      "empty": "There are no converted files yet."
+    },
+    "search": {
+      "label": "Search file",
+      "placeholder": "Search by name…"
+    },
+    "viewer": {
+      "selectPrompt": "Pick a file from the tree to view it here.",
+      "loading": "Loading file…",
+      "notPreviewable": "This file can't be previewed (binary content)."
+    },
+    "actions": {
+      "download": "Download zip"
+    },
+    "errors": {
+      "notFound": "This export hasn't been converted yet, or doesn't exist.",
+      "network": "Could not connect to the API. Check that it's running and try again.",
+      "generic": "Something went wrong loading the file tree. Try again.",
+      "file": {
+        "notFound": "The selected file was not found.",
+        "network": "Could not connect to the API. Check that it's running and try again.",
+        "generic": "Could not load the file content."
+      }
+    }
+  }
+}

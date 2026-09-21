@@ -1,0 +1,69 @@
+{#
+  Índice global de la salida (spec 04 CA-7). Una sección por categoría convertida:
+    conversations       filas ya ordenadas (fecha descendente, sin fecha al final):
+                        {day, title, link, project, project_link, messages}
+                        `project` es el NOMBRE del proyecto si resolvió y el uuid crudo
+                        si no; `project_link` solo existe cuando resolvió
+    projects            {day, title, link, conversations, docs}
+    memories            {day, title, link, project, project_link} — mismo criterio que
+                        en las conversaciones: nombre si resolvió, uuid crudo si no
+    frames              {day, title, link, kind, content}
+    accounts            {title, link} — el perfil de la cuenta (normalmente uno)
+    *_count             cuántos ítems tiene cada sección
+  `link` es siempre una ruta relativa a esta misma carpeta (el `_index.md` está en la raíz).
+  Los textos del usuario van por `md_cell`: un `|` sin escapar partiría la fila.
+  Nada de la corrida actual (fecha, versión) puede aparecer aquí: spec 04 CA-10.
+-#}
+# Índice del export
+
+{% if conversation_count %}
+## Conversaciones ({{ conversation_count }})
+
+| Fecha | Conversación | Proyecto | Mensajes |
+| --- | --- | --- | --- |
+{% for row in conversations %}
+| {{ row.day | md_cell }} | [{{ row.title | md_cell }}]({{ row.link }}) | {% if row.project_link %}[{{ row.project | md_cell }}]({{ row.project_link }}){% else %}{{ row.project | md_cell }}{% endif %} | {{ row.messages | md_cell }} |
+{% endfor %}
+
+{% endif %}
+{% if project_count %}
+## Proyectos ({{ project_count }})
+
+| Actualizado | Proyecto | Conversaciones | Documentos |
+| --- | --- | --- | --- |
+{% for row in projects %}
+| {{ row.day | md_cell }} | [{{ row.title | md_cell }}]({{ row.link }}) | {{ row.conversations | md_cell }} | {{ row.docs | md_cell }} |
+{% endfor %}
+
+{% endif %}
+{% if memory_count %}
+## Memorias ({{ memory_count }})
+
+| Actualizada | Memoria | Proyecto |
+| --- | --- | --- |
+{% for row in memories %}
+| {{ row.day | md_cell }} | [{{ row.title | md_cell }}]({{ row.link }}) | {% if row.project_link %}[{{ row.project | md_cell }}]({{ row.project_link }}){% else %}{{ row.project | md_cell }}{% endif %} |
+{% endfor %}
+
+{% endif %}
+{% if frame_count %}
+## Artefactos ({{ frame_count }})
+
+| Actualizado | Artefacto | Tipo | Contenido |
+| --- | --- | --- | --- |
+{% for row in frames %}
+| {{ row.day | md_cell }} | [{{ row.title | md_cell }}]({{ row.link }}) | {{ row.kind | md_cell }} | {{ row.content | md_cell }} |
+{% endfor %}
+
+{% endif %}
+{% if account_count %}
+## Cuenta ({{ account_count }})
+
+{% for row in accounts %}
+- [{{ row.title | md_cell }}]({{ row.link }})
+{% endfor %}
+
+{% endif %}
+{% if not conversation_count and not memory_count and not project_count and not frame_count and not account_count %}
+No se convirtió ningún ítem. Mirá `_report/errors.jsonl` para saber por qué.
+{% endif %}

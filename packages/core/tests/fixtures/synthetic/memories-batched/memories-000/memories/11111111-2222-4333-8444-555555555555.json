@@ -1,0 +1,26 @@
+{
+  "account_uuid": "11111111-2222-4333-8444-555555555555",
+  "conversations_memory": "# Lo que recuerdo de las conversaciones\n\n- Prefiere respuestas en espanol y directas.\n- Trabaja en una herramienta para exportar datos a Markdown.\n- Odia los resumenes vacios al final de cada respuesta.\n",
+  "memory_files": [
+    {
+      "path": "/profile.md",
+      "content": "# Perfil\n\nSe llama Valentina, vive en Montevideo y programa en Python.\n\n## Preferencias\n\n- Tono directo, sin adulacion.\n- Ejemplos antes que teoria.\n",
+      "updated_at": "2026-01-15T09:30:00.000000Z",
+      "confidence": "alta"
+    },
+    {
+      "path": "/people/Ana Maria.md",
+      "content": "Ana Maria es la disenadora del equipo. Revisa siempre los textos en espanol antes de publicarlos.\n",
+      "updated_at": "2026-02-01T18:05:42+02:00"
+    },
+    {
+      "path": "/areas/Analisis Ñandú.md",
+      "content": "Proyecto de analisis de datos de aves corredoras.\n\n---\n\nNota al pie con una linea de guiones arriba.\n",
+      "updated_at": "sin fecha"
+    }
+  ],
+  "project_memories": {
+    "ffffffff-0000-4000-8000-000000000002": "Memoria del segundo proyecto: migrar la documentacion interna a Markdown.\n",
+    "ffffffff-0000-4000-8000-000000000001": "Memoria del primer proyecto: el usuario quiere conservar los adjuntos.\n"
+  }
+}

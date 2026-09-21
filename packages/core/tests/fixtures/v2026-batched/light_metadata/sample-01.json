@@ -1,0 +1,8 @@
+[
+  {
+    "email_address": "<str:26>",
+    "full_name": "<str:7>",
+    "uuid": "<str:36>",
+    "verified_phone_number": null
+  }
+]

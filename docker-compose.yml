@@ -1,0 +1,42 @@
+services:
+  api:
+    build:
+      context: .
+      dockerfile: apps/api/Dockerfile
+    ports:
+      - "8000:8000"
+    environment:
+      # Nunca en true en Docker Compose (spec 06 CA-9): el modo local expondría
+      # rutas del filesystem del host contenedor, no tiene sentido para un usuario
+      # que sube su export por la API.
+      CEM_ALLOW_LOCAL_PATHS: "false"
+      CEM_MAX_UPLOAD_MB: "2048"
+      CEM_JOB_TIMEOUT_S: "300"
+    healthcheck:
+      # Sin curl en python:3.12-slim-bookworm (observacion 5): urllib de la propia
+      # stdlib de Python siempre esta disponible en la imagen.
+      test:
+        [
+          "CMD",
+          "python",
+          "-c",
+          "import urllib.request; urllib.request.urlopen('http://localhost:8000/health', timeout=3)",
+        ]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 5s
+
+  # Angular (apps/web) servido como estatico por nginx, que reenvia /api y
+  # /health al servicio `api` (apps/web/docker/nginx.conf) - el usuario final
+  # solo necesita `docker compose up` y abrir http://localhost:4200, sin
+  # instalar Node/pnpm/just ni correr ningun comando de desarrollo.
+  web:
+    build:
+      context: apps/web
+      dockerfile: Dockerfile
+    ports:
+      - "4200:80"
+    depends_on:
+      api:
+        condition: service_healthy

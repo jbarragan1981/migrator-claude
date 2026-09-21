@@ -1,0 +1,33 @@
+{#
+  Una memoria de la cuenta (spec 04). Variables disponibles:
+    memory      entidad Memory completa, por si una plantilla propia necesita más
+    id          Memory.path (el identificador de una memoria, ADR-0005)
+    type        siempre "memory"
+    title       último segmento de la ruta, o un título propio si la ruta es sintética
+    created_at  el export no trae fecha de creación de una memoria: siempre null
+    updated_at  ISO-8601 UTC, o null si el export no la trae o no era legible
+    source_file archivo del export del que salió
+    project_id  uuid del proyecto dueño, solo en las memorias de project_memories
+    tags        lista de etiquetas derivadas del origen y de la carpeta de la ruta
+    extra       campos que no reconocemos, tal cual vinieron
+    content     el texto de la memoria, que ya es Markdown y se inserta sin tocar
+  Nada de la corrida actual (fecha, versión) puede aparecer aquí: spec 04 CA-10.
+-#}
+---
+id: {{ id | yaml_value }}
+type: {{ type | yaml_value }}
+title: {{ title | yaml_value }}
+created_at: {{ created_at | yaml_value }}
+updated_at: {{ updated_at | yaml_value }}
+source_file: {{ source_file | yaml_value }}
+{% if project_id %}
+project_id: {{ project_id | yaml_value }}
+{% endif %}
+tags: {{ tags | yaml_inline }}
+{% if extra %}
+extra:
+{{ extra | yaml_block }}
+{% endif %}
+---
+
+{{ content }}

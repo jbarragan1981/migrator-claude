@@ -1,0 +1,111 @@
+# serializer version: 1
+# name: test_snapshot_of_a_frame_with_several_versions
+  dict({
+    'frames/document.md': '''
+      ---
+      id: f2f2f2f2-5555-4666-8777-888888888888
+      type: frame
+      title: document
+      created_at: null
+      updated_at: '2026-02-03T04:05:06Z'
+      source_file: frames-000/artifacts/f2f2f2f2-5555-4666-8777-888888888888/f2f2f2f2-5555-4666-8777-888888888888.json
+      kind: document
+      visibility: private
+      version_count: 0
+      tags: [frame, document]
+      ---
+      
+      # document
+      
+      | Campo | Valor |
+      |---|---|
+      | Identificador | `f2f2f2f2-5555-4666-8777-888888888888` |
+      | Tipo (`kind`) | document |
+      | Visibilidad | private |
+      | Cuenta dueña | aaaaaaaa-bbbb-4ccc-8ddd-eeeeeeeeeeee |
+      | Versión activa | ver_99999999999 |
+      | Versiones | 0 |
+      
+      ## Contenido
+      
+      > El export no incluye el contenido de este artefacto (ni el código, ni el documento, ni la imagen): `frames-000/artifacts/` solo trae su metadata —versiones, títulos, descripciones y fechas—. No se ha inventado ningún texto.
+      
+      ## Versión activa
+      
+      _El export declara `ver_99999999999` como versión activa, pero no coincide con el identificador de ninguna de las versiones de este artefacto._
+      
+      ## Versiones
+      
+      _El export no trae ninguna versión de este artefacto._
+  
+    ''',
+    'frames/informe-de-ventas-q3-v2.md': '''
+      ---
+      id: f1f1f1f1-1111-4222-8333-444444444444
+      type: frame
+      title: Informe de ventas Q3 (v2)
+      created_at: '2026-01-02T03:04:05Z'
+      updated_at: '2026-02-03T04:05:06Z'
+      source_file: frames-000/artifacts/f1f1f1f1-1111-4222-8333-444444444444/f1f1f1f1-1111-4222-8333-444444444444.json
+      kind: document
+      visibility: private
+      version_count: 2
+      tags: [frame, document]
+      ---
+      
+      # Informe de ventas Q3 (v2)
+      
+      | Campo | Valor |
+      |---|---|
+      | Identificador | `f1f1f1f1-1111-4222-8333-444444444444` |
+      | Tipo (`kind`) | document |
+      | Visibilidad | private |
+      | Cuenta dueña | aaaaaaaa-bbbb-4ccc-8ddd-eeeeeeeeeeee |
+      | Versión activa | ver_00000000002 |
+      | Versiones | 2 |
+      
+      ## Contenido
+      
+      > El export no incluye el contenido de este artefacto (ni el código, ni el documento, ni la imagen): `frames-000/artifacts/` solo trae su metadata —versiones, títulos, descripciones y fechas—. No se ha inventado ningún texto.
+      >
+      > Lo que sí está: el JSON original del artefacto, íntegro y sin tocar, al final de este archivo.
+      
+      ## Versión activa
+      
+      **Informe de ventas Q3 (v2)** — `ver_00000000002` — 2026-01-02T03:04:05Z
+      
+      Un documento con el resumen de ventas del trimestre.
+      
+      ## Versiones
+      
+      | Versión | Título | Creada | Activa | Descripción |
+      |---|---|---|---|---|
+      | `ver_00000000001` | Informe de ventas Q3 | 2026-01-02T03:04:05Z | no | Un documento con el resumen de ventas del trimestre. |
+      | `ver_00000000002` | Informe de ventas Q3 (v2) | 2026-01-02T03:04:05Z | sí | Un documento con el resumen de ventas del trimestre. |
+      
+      ## JSON original del artefacto
+      
+      <details>
+      <summary>Todo lo que el export trae de este artefacto, sin tocar</summary>
+      
+      ```json
+      {
+        "id": "f1f1f1f1-1111-4222-8333-444444444444",
+        "kind": "document",
+        "versions": [
+          {
+            "id": "ver_00000000001"
+          },
+          {
+            "id": "ver_00000000002"
+          }
+        ],
+        "visibility": "private"
+      }
+      ```
+      
+      </details>
+  
+    ''',
+  })
+# ---

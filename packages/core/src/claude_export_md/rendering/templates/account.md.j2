@@ -1,0 +1,48 @@
+{#
+  El perfil de la cuenta (spec 04, `light_metadata`). Variables disponibles:
+    account       entidad Account completa, por si una plantilla propia necesita más
+    id            Account.id (el `uuid` del export)
+    type          siempre "account"
+    title         nombre de la cuenta, o el correo, o el id: lo más legible que haya
+    created_at    el export no trae fecha de creación de la cuenta: siempre null
+    updated_at    el export no trae fecha de actualización de la cuenta: siempre null
+    source_file   archivo del export del que salió
+    tags          lista de etiquetas del frontmatter
+    extra         campos que no reconocemos, tal cual vinieron
+    email         email_address del export, o null
+    display_name  full_name del export, o null
+    settings      pares (clave, valor) de Account.settings, ordenados; vacío si no hay
+  Nada de la corrida actual (fecha, versión) puede aparecer aquí: spec 04 CA-10.
+  Tampoco tokens ni secretos: el parser ya les quita el valor (light_metadata.py).
+-#}
+---
+id: {{ id | yaml_value }}
+type: {{ type | yaml_value }}
+title: {{ title | yaml_value }}
+created_at: {{ created_at | yaml_value }}
+updated_at: {{ updated_at | yaml_value }}
+source_file: {{ source_file | yaml_value }}
+tags: {{ tags | yaml_inline }}
+{% if extra %}
+extra:
+{{ extra | yaml_block }}
+{% endif %}
+---
+
+# {{ title }}
+
+| Campo | Valor |
+|---|---|
+| Identificador | `{{ id | md_cell }}` |
+| Nombre | {{ display_name | md_cell }} |
+| Correo | {{ email | md_cell }} |
+{% if settings %}
+
+## Configuración
+
+| Clave | Valor |
+|---|---|
+{% for key, value in settings %}
+| {{ key | md_cell }} | {{ value | md_cell }} |
+{% endfor %}
+{% endif %}

@@ -1,0 +1,76 @@
+{#
+  Portada de la salida (CLAUDE.md §5). Variables disponibles:
+    source              nombre de la carpeta/zip del export del que salió todo esto
+    format_version      "batched-manifest" o "legacy-single-zip"
+    counts              ítems convertidos por categoría, ya ordenados
+    export_created_at   cuándo generó Anthropic el export (fecha del MANIFIESTO), o null
+    missing_categories  categorías que el export no traía
+  La fecha de la conversión NO va aquí: dos corridas del mismo export tienen que
+  producir los mismos bytes (CLAUDE.md §1.4, spec 04 CA-1).
+-#}
+# Export de Claude.ai en Markdown
+
+Esta carpeta es la conversión a Markdown de una exportación de datos de Claude.ai.
+Se generó con `claude-export-md` en la máquina del usuario: nada se descargó de
+Internet y nada salió de ella.
+
+## De dónde salió
+
+| Dato | Valor |
+| --- | --- |
+| Export | `{{ source | md_cell }}` |
+| Formato | `{{ format_version | md_cell }}` |
+{% if export_created_at %}
+| Fecha del export | {{ export_created_at | md_cell }} |
+{% endif %}
+
+{% if counts %}
+## Qué se convirtió
+
+| Categoría | Ítems |
+| --- | --- |
+{% for category, count in counts.items() %}
+| {{ category | md_cell }} | {{ count }} |
+{% endfor %}
+
+{% endif %}
+## Cómo está organizado
+
+Solo se listan las carpetas que este export produjo: lo que no venía en el export no se
+crea vacío.
+
+- [`_index.md`](_index.md) — índice de todo, con enlaces relativos.
+{% if counts.get('conversations') %}
+- `conversations/YYYY/MM/` — una conversación por archivo; los bloques de código
+  largos que traía el mensaje se extrajeron a su carpeta `artifacts/`. Si la
+  conversación pertenecía a un proyecto, enlaza a su `project.md`.
+{% endif %}
+{% if counts.get('projects') %}
+- `projects/<proyecto>/` — `project.md` (nombre, descripción e instrucciones) y
+  `docs/` con un archivo por documento del proyecto. El `project.md` enumera las
+  conversaciones que apuntan al proyecto.
+{% endif %}
+{% if counts.get('memories') %}
+- `memories/` — las memorias de la cuenta, respetando su ruta original.
+{% endif %}
+{% if counts.get('frames') %}
+- `frames/` — un archivo por artefacto, con su metadata y el JSON original íntegro.
+{% endif %}
+{% if counts.get('light_metadata') %}
+- `account/` — el perfil de la cuenta (sin tokens ni secretos).
+{% endif %}
+- `_report/` — `summary.json` (qué se convirtió), `errors.jsonl` (una línea por ítem
+  que no se pudo parsear) e `inventory.json` (qué traía el export).
+
+{% if counts.get('projects') or counts.get('frames') %}
+## Lo que el export no trae
+
+El export de Anthropic no incluye el CONTENIDO de los documentos de un proyecto ni el de
+los artefactos: solo su metadata (nombre, fechas, versiones). Cada archivo afectado lo
+dice con todas sus letras y no se ha inventado ningún texto; el JSON original de los
+artefactos se publica íntegro dentro de su `.md`.
+{% endif %}
+{% if missing_categories %}
+
+Categorías que este export no traía: {{ missing_categories | join(', ') }}.
+{% endif %}

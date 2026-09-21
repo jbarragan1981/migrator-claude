@@ -1,0 +1,16 @@
+{
+  "active_version": "<str:15>",
+  "id": "<str:36>",
+  "kind": "<str:8>",
+  "owner_account": "<str:36>",
+  "updated_at": "<str:25>",
+  "versions": [
+    {
+      "created_at": "<str:25>",
+      "description": "<str:133>",
+      "id": "<str:15>",
+      "title": "<str:32>"
+    }
+  ],
+  "visibility": "<str:7>"
+}

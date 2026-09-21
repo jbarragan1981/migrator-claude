@@ -1,0 +1,231 @@
+[
+  {
+    "account": {
+      "uuid": "11111111-2222-4333-8444-555555555555"
+    },
+    "uuid": "a1a1a1a1-1111-4000-8000-000000000001",
+    "name": "Analisis Nandu / Q3",
+    "summary": "Repaso del informe de ventas del trimestre",
+    "created_at": "2026-01-15T14:32:05.123456Z",
+    "updated_at": "2026-01-15T15:10:47.987654Z",
+    "project_uuid": null,
+    "chat_messages": [
+      {
+        "uuid": "bbbbbbbb-0000-4000-8000-000000000001",
+        "parent_message_uuid": "00000000-0000-4000-8000-000000000000",
+        "sender": "human",
+        "created_at": "2026-01-15T14:32:05.123456Z",
+        "updated_at": "2026-01-15T14:32:05.123456Z",
+        "text": "Hola, el informe de ventas tarda muchisimo.\nPodes revisar `scripts/ventas.py` y decirme que esta mal?",
+        "content": [
+          {
+            "citations": [],
+            "flags": null,
+            "start_timestamp": "2026-01-15T14:32:05.123456Z",
+            "stop_timestamp": "2026-01-15T14:32:05.123456Z",
+            "text": "Hola, el informe de ventas tarda muchisimo.\nPodes revisar `scripts/ventas.py` y decirme que esta mal?",
+            "type": "text"
+          }
+        ]
+      },
+      {
+        "uuid": "bbbbbbbb-0000-4000-8000-000000000002",
+        "parent_message_uuid": "bbbbbbbb-0000-4000-8000-000000000001",
+        "sender": "assistant",
+        "created_at": "2026-01-15T14:33:18.000000Z",
+        "updated_at": "2026-01-15T14:35:02.000000Z",
+        "text": "He revisado el script: el cuello de botella esta en que recalcula el total\ndentro del bucle, una vez por cada venta.\n\nTe dejo la version corregida de `scripts/ventas.py`:\n\n```python\n\"\"\"Informe de ventas del trimestre.\"\"\"\n\nfrom __future__ import annotations\n\nfrom dataclasses import dataclass\nfrom decimal import Decimal\n\nIVA = Decimal('0.21')\n\n\n@dataclass(frozen=True)\nclass Venta:\n    region: str\n    importe: Decimal\n\n\ndef total(ventas: list[Venta]) -> Decimal:\n    return sum((v.importe for v in ventas), Decimal(0))\n\n\ndef total_con_iva(ventas: list[Venta]) -> Decimal:\n    return total(ventas) * (1 + IVA)\n\n\ndef por_region(ventas: list[Venta]) -> dict[str, Decimal]:\n    acumulado: dict[str, Decimal] = {}\n    for venta in ventas:\n        acumulado[venta.region] = acumulado.get(venta.region, Decimal(0)) + venta.importe\n    return acumulado\n\n\ndef informe(ventas: list[Venta]) -> str:\n    lineas = ['# Ventas del trimestre', '']\n    for region, importe in sorted(por_region(ventas).items()):\n        lineas.append(f'- {region}: {importe:.2f}')\n    lineas.append('')\n    lineas.append(f'Total: {total(ventas):.2f}')\n    lineas.append(f'Total con IVA: {total_con_iva(ventas):.2f}')\n    return '\\n'.join(lineas)\n\n\ndef main() -> None:\n    ventas = [Venta('norte', Decimal('1200')), Venta('sur', Decimal('980'))]\n    print(informe(ventas))\n\n\nif __name__ == '__main__':\n    main()\n```\n\n---\n\nPara comprobarlo basta con:\n\n```bash\nuv run python scripts/ventas.py\necho $?\n```\n\nCon eso el informe del trimestre sale en menos de un segundo.",
+        "content": [
+          {
+            "alternative_display_type": null,
+            "cut_off": false,
+            "flags": null,
+            "hidden": false,
+            "signature": null,
+            "start_timestamp": "2026-01-15T14:33:18.000000Z",
+            "stop_timestamp": "2026-01-15T14:33:40.000000Z",
+            "summaries": [
+              {
+                "summary": "Revisar el script antes de responder"
+              },
+              {
+                "summary": "Buscar el recalculo dentro del bucle"
+              }
+            ],
+            "thinking": "El usuario tiene un script lento. Lo mas probable es un recalculo dentro del bucle.\nConviene leer el archivo antes de opinar.",
+            "thinking_hidden": false,
+            "truncated": false,
+            "type": "thinking"
+          },
+          {
+            "approval_key": null,
+            "approval_options": null,
+            "context": null,
+            "display_content": {
+              "text": "Leyendo scripts/ventas.py",
+              "type": "text"
+            },
+            "flags": null,
+            "hidden_in_chat": null,
+            "icon_name": "file",
+            "id": "toolu_0000000000000001",
+            "input": {
+              "description": "Leer el script de ventas",
+              "path": "/home/usuaria/proyecto/scripts/ventas.py"
+            },
+            "integration_icon_url": null,
+            "integration_name": null,
+            "is_mcp_app": null,
+            "mcp_server_url": null,
+            "message": "Leyendo el archivo",
+            "name": "read_file",
+            "start_timestamp": "2026-01-15T14:33:41.000000Z",
+            "stop_timestamp": "2026-01-15T14:33:42.000000Z",
+            "tool_identifier": null,
+            "type": "tool_use"
+          },
+          {
+            "content": [
+              {
+                "text": "   1  linea 1 del archivo scripts/ventas.py\n   2  linea 2 del archivo scripts/ventas.py\n   3  linea 3 del archivo scripts/ventas.py\n   4  linea 4 del archivo scripts/ventas.py\n   5  linea 5 del archivo scripts/ventas.py\n   6  linea 6 del archivo scripts/ventas.py\n   7  linea 7 del archivo scripts/ventas.py\n   8  linea 8 del archivo scripts/ventas.py\n   9  linea 9 del archivo scripts/ventas.py\n  10  linea 10 del archivo scripts/ventas.py\n  11  linea 11 del archivo scripts/ventas.py\n  12  linea 12 del archivo scripts/ventas.py\n  13  linea 13 del archivo scripts/ventas.py\n  14  linea 14 del archivo scripts/ventas.py\n  15  linea 15 del archivo scripts/ventas.py\n  16  linea 16 del archivo scripts/ventas.py\n  17  linea 17 del archivo scripts/ventas.py\n  18  linea 18 del archivo scripts/ventas.py\n  19  linea 19 del archivo scripts/ventas.py\n  20  linea 20 del archivo scripts/ventas.py\n  21  linea 21 del archivo scripts/ventas.py\n  22  linea 22 del archivo scripts/ventas.py\n  23  linea 23 del archivo scripts/ventas.py\n  24  linea 24 del archivo scripts/ventas.py\n  25  linea 25 del archivo scripts/ventas.py\n  26  linea 26 del archivo scripts/ventas.py\n  27  linea 27 del archivo scripts/ventas.py\n  28  linea 28 del archivo scripts/ventas.py\n  29  linea 29 del archivo scripts/ventas.py\n  30  linea 30 del archivo scripts/ventas.py\n  31  linea 31 del archivo scripts/ventas.py\n  32  linea 32 del archivo scripts/ventas.py\n  33  linea 33 del archivo scripts/ventas.py\n  34  linea 34 del archivo scripts/ventas.py\n  35  linea 35 del archivo scripts/ventas.py\n  36  linea 36 del archivo scripts/ventas.py\n  37  linea 37 del archivo scripts/ventas.py\n  38  linea 38 del archivo scripts/ventas.py\n  39  linea 39 del archivo scripts/ventas.py\n  40  linea 40 del archivo scripts/ventas.py\n  41  linea 41 del archivo scripts/ventas.py\n  42  linea 42 del archivo scripts/ventas.py\n  43  linea 43 del archivo scripts/ventas.py\n  44  linea 44 del archivo scripts/ventas.py\n  45  linea 45 del archivo scripts/ventas.py\n  46  linea 46 del archivo scripts/ventas.py\n  47  linea 47 del archivo scripts/ventas.py\n  48  linea 48 del archivo scripts/ventas.py\n  49  linea 49 del archivo scripts/ventas.py\n  50  linea 50 del archivo scripts/ventas.py\n  51  linea 51 del archivo scripts/ventas.py\n  52  linea 52 del archivo scripts/ventas.py\n  53  linea 53 del archivo scripts/ventas.py\n  54  linea 54 del archivo scripts/ventas.py\n  55  linea 55 del archivo scripts/ventas.py\n  56  linea 56 del archivo scripts/ventas.py\n  57  linea 57 del archivo scripts/ventas.py\n  58  linea 58 del archivo scripts/ventas.py\n  59  linea 59 del archivo scripts/ventas.py\n  60  linea 60 del archivo scripts/ventas.py",
+                "type": "text",
+                "uuid": "cccccccc-0000-4000-8000-000000000001"
+              }
+            ],
+            "display_content": null,
+            "flags": null,
+            "hidden_in_chat": null,
+            "icon_name": "file",
+            "integration_icon_url": null,
+            "integration_name": null,
+            "is_error": false,
+            "mcp_server_url": null,
+            "message": null,
+            "meta": {
+              "output_format_category": "txt"
+            },
+            "name": "read_file",
+            "start_timestamp": null,
+            "stop_timestamp": null,
+            "structured_content": null,
+            "tool_use_id": "toolu_0000000000000001",
+            "type": "tool_result"
+          },
+          {
+            "citations": [],
+            "flags": null,
+            "start_timestamp": "2026-01-15T14:34:00.000000Z",
+            "stop_timestamp": "2026-01-15T14:35:02.000000Z",
+            "text": "He revisado el script: el cuello de botella esta en que recalcula el total\ndentro del bucle, una vez por cada venta.\n\nTe dejo la version corregida de `scripts/ventas.py`:\n\n```python\n\"\"\"Informe de ventas del trimestre.\"\"\"\n\nfrom __future__ import annotations\n\nfrom dataclasses import dataclass\nfrom decimal import Decimal\n\nIVA = Decimal('0.21')\n\n\n@dataclass(frozen=True)\nclass Venta:\n    region: str\n    importe: Decimal\n\n\ndef total(ventas: list[Venta]) -> Decimal:\n    return sum((v.importe for v in ventas), Decimal(0))\n\n\ndef total_con_iva(ventas: list[Venta]) -> Decimal:\n    return total(ventas) * (1 + IVA)\n\n\ndef por_region(ventas: list[Venta]) -> dict[str, Decimal]:\n    acumulado: dict[str, Decimal] = {}\n    for venta in ventas:\n        acumulado[venta.region] = acumulado.get(venta.region, Decimal(0)) + venta.importe\n    return acumulado\n\n\ndef informe(ventas: list[Venta]) -> str:\n    lineas = ['# Ventas del trimestre', '']\n    for region, importe in sorted(por_region(ventas).items()):\n        lineas.append(f'- {region}: {importe:.2f}')\n    lineas.append('')\n    lineas.append(f'Total: {total(ventas):.2f}')\n    lineas.append(f'Total con IVA: {total_con_iva(ventas):.2f}')\n    return '\\n'.join(lineas)\n\n\ndef main() -> None:\n    ventas = [Venta('norte', Decimal('1200')), Venta('sur', Decimal('980'))]\n    print(informe(ventas))\n\n\nif __name__ == '__main__':\n    main()\n```\n\n---\n\nPara comprobarlo basta con:\n\n```bash\nuv run python scripts/ventas.py\necho $?\n```\n\nCon eso el informe del trimestre sale en menos de un segundo.",
+            "type": "text"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "account": {
+      "uuid": "11111111-2222-4333-8444-555555555555"
+    },
+    "uuid": "b2b2b2b2-2222-4000-8000-000000000002",
+    "name": "",
+    "summary": "",
+    "created_at": "2026-02-03T08:05:00.000000+02:00",
+    "updated_at": "2026-02-03T08:20:00.000000+02:00",
+    "project_uuid": "ffffffff-0000-4000-8000-000000000001",
+    "chat_messages": [
+      {
+        "uuid": "bbbbbbbb-0000-4000-8000-000000000003",
+        "parent_message_uuid": "00000000-0000-4000-8000-000000000000",
+        "sender": "human",
+        "created_at": "2026-02-03T08:05:00.000000+02:00",
+        "updated_at": "2026-02-03T08:05:00.000000+02:00",
+        "text": "",
+        "content": [
+          {
+            "citations": [],
+            "flags": null,
+            "start_timestamp": "2026-02-03T08:05:00.000000+02:00",
+            "stop_timestamp": "2026-02-03T08:05:00.000000+02:00",
+            "text": "Segui con el plan del proyecto, por favor.",
+            "type": "text"
+          }
+        ]
+      },
+      {
+        "uuid": "bbbbbbbb-0000-4000-8000-000000000004",
+        "parent_message_uuid": "bbbbbbbb-0000-4000-8000-000000000003",
+        "sender": "assistant",
+        "created_at": "2026-02-03T08:06:00.000000+02:00",
+        "updated_at": "2026-02-03T08:06:00.000000+02:00",
+        "text": "Voy con el plan.",
+        "content": [
+          {
+            "text": "Voy con el plan.",
+            "type": "text",
+            "citations": [],
+            "flags": null,
+            "start_timestamp": "2026-02-03T08:06:00.000000+02:00",
+            "stop_timestamp": "2026-02-03T08:06:00.000000+02:00"
+          },
+          {
+            "type": "vision_preview",
+            "caption": "Un bloque de un tipo que todavia no conocemos",
+            "payload_version": 3
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "account": {
+      "uuid": "11111111-2222-4333-8444-555555555555"
+    },
+    "uuid": "c3c3c3c3-3333-4000-8000-000000000003",
+    "name": "Charla sin fecha",
+    "summary": null,
+    "project_uuid": null,
+    "chat_messages": [
+      {
+        "uuid": "bbbbbbbb-0000-4000-8000-000000000005",
+        "sender": "human",
+        "text": "Una conversacion que el export trajo sin fechas.",
+        "content": [
+          {
+            "text": "Una conversacion que el export trajo sin fechas.",
+            "type": "text"
+          }
+        ]
+      },
+      {
+        "sender": "assistant",
+        "text": "Un mensaje que el export trajo sin uuid.",
+        "content": [
+          "un bloque que no es un objeto",
+          {
+            "text": "Un mensaje que el export trajo sin uuid.",
+            "type": "text"
+          }
+        ]
+      }
+    ]
+  },
+  "esto no es una conversacion",
+  {
+    "name": "Item sin identificador",
+    "created_at": "2026-03-01T10:00:00.000000Z",
+    "chat_messages": []
+  },
+  {
+    "account": {
+      "uuid": "11111111-2222-4333-8444-555555555555"
+    },
+    "uuid": "d4d4d4d4-4444-4000-8000-000000000004",
+    "name": "Mensajes con forma inesperada",
+    "summary": "",
+    "created_at": "2026-03-02T09:00:00.000000Z",
+    "updated_at": "2026-03-02T09:00:00.000000Z",
+    "project_uuid": null,
+    "chat_messages": "esto deberia ser un array"
+  }
+]
